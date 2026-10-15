@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Đăng nhập | ClubManager</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body class="login-page">
+
+<main class="login-card">
+
+    <div class="login-logo">
+
+        <h1>ClubManager</h1>
+
+        <p>
+            Hệ thống quản lý câu lạc bộ
+        </p>
+
+    </div>
+
+
+    <form
+        class="login-form"
+        action="index.php"
+        method="get"
+    >
+
+        <div class="form-group">
+
+            <label for="username">
+                Tên đăng nhập
+            </label>
+
+            <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Nhập tên đăng nhập"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="password">
+                Mật khẩu
+            </label>
+
+            <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Nhập mật khẩu"
+                required
+            >
+
+        </div>
+
+
+        <div class="login-options">
+
+            <input
+                type="checkbox"
+                id="remember"
+                name="remember"
+            >
+
+            <label for="remember">
+                Ghi nhớ đăng nhập
+            </label>
+
+        </div>
+
+
+        <button type="submit">
+            Đăng nhập
+        </button>
+
+    </form>
+
+</main>
+
+</body>
+
+</html>
