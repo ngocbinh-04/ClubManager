@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Trang quản lý sự kiện câu lạc bộ trong ClubManager.">
+    <title>Quản lý sự kiện | ClubManager</title>
+</head>
+
+<body>
+
+    <header>
+        <h2>ClubManager</h2>
+        <p>CLB Tin học</p>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="index.html">Câu lạc bộ</a></li>
+            <li><a href="thanh-vien.html">Thành viên</a></li>
+            <li><a href="su-kien.html">Sự kiện</a></li>
+            <li><a href="thu-chi.html">Thu - Chi</a></li>
+            <li><a href="thong-ke.html">Thống kê</a></li>
+            <li><a href="dang-nhap.html">Đăng xuất</a></li>
+        </ul>
+    </nav>
+
+    <main>
+
+        <h1>Quản lý sự kiện</h1>
+
+        <section>
+            <h2>Tìm kiếm sự kiện</h2>
+
+            <form>
+                <label for="tim-su-kien">
+                    Tên sự kiện
+                </label>
+
+                <input
+                    type="search"
+                    id="tim-su-kien"
+                    name="tim-su-kien"
+                    placeholder="Nhập tên sự kiện"
+                >
+
+                <button type="submit">
+                    Tìm kiếm
+                </button>
+            </form>
+        </section>
+
+        <section>
+            <h2>Danh sách sự kiện</h2>
+
+            <button type="button">
+                Thêm sự kiện
+            </button>
+
+            <table border="1">
+
+                <caption>
+                    Danh sách sự kiện CLB Tin học
+                </caption>
+
+                <thead>
+                    <tr>
+                        <th scope="col">STT</th>
+                        <th scope="col">Tên sự kiện</th>
+                        <th scope="col">Thời gian</th>
+                        <th scope="col">Địa điểm</th>
+                        <th scope="col">Số người tham gia</th>
+                        <th scope="col">Trạng thái</th>
+                        <th scope="col">Thao tác</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <td>1</td>
+                        <td>Workshop Lập trình Web</td>
+                        <td>10/11/2026</td>
+                        <td>Phòng A1</td>
+                        <td>45</td>
+                        <td>Sắp diễn ra</td>
+                        <td>
+                            <a href="diem-danh.html">
+                                Điểm danh
+                            </a>
+
+                            <button type="button">
+                                Sửa
+                            </button>
+
+                            <button type="button">
+                                Xóa
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>2</td>
+                        <td>Cuộc thi Hackathon</td>
+                        <td>20/12/2026</td>
+                        <td>Hội trường</td>
+                        <td>80</td>
+                        <td>Sắp diễn ra</td>
+                        <td>
+                            <a href="diem-danh.html">
+                                Điểm danh
+                            </a>
+
+                            <button type="button">
+                                Sửa
+                            </button>
+
+                            <button type="button">
+                                Xóa
+                            </button>
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>© 2026 ClubManager</p>
+    </footer>
+
+</body>
+
+</html>

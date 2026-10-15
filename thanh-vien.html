@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Trang quản lý thành viên câu lạc bộ trong ClubManager.">
+    <title>Quản lý thành viên | ClubManager</title>
+</head>
+
+<body>
+
+    <header>
+        <h2>ClubManager</h2>
+        <p>CLB Tin học</p>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="index.html">Câu lạc bộ</a></li>
+            <li><a href="thanh-vien.html">Thành viên</a></li>
+            <li><a href="su-kien.html">Sự kiện</a></li>
+            <li><a href="thu-chi.html">Thu - Chi</a></li>
+            <li><a href="thong-ke.html">Thống kê</a></li>
+            <li><a href="dang-nhap.html">Đăng xuất</a></li>
+        </ul>
+    </nav>
+
+    <main>
+
+        <h1>Quản lý thành viên</h1>
+
+        <section>
+            <h2>Tìm kiếm thành viên</h2>
+
+            <form>
+                <label for="tim-thanh-vien">
+                    Tên thành viên
+                </label>
+
+                <input
+                    type="search"
+                    id="tim-thanh-vien"
+                    name="tim-thanh-vien"
+                    placeholder="Nhập tên thành viên"
+                >
+
+                <button type="submit">
+                    Tìm kiếm
+                </button>
+            </form>
+        </section>
+
+        <section>
+            <h2>Danh sách thành viên</h2>
+
+            <button type="button">
+                Thêm thành viên
+            </button>
+
+            <table border="1">
+
+                <caption>
+                    Danh sách thành viên CLB Tin học
+                </caption>
+
+                <thead>
+                    <tr>
+                        <th scope="col">STT</th>
+                        <th scope="col">Họ tên</th>
+                        <th scope="col">Mã sinh viên</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Vai trò</th>
+                        <th scope="col">Trạng thái</th>
+                        <th scope="col">Thao tác</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <td>1</td>
+                        <td>Nguyễn Văn A</td>
+                        <td>22123456</td>
+                        <td>a@example.com</td>
+                        <td>Chủ nhiệm</td>
+                        <td>Hoạt động</td>
+                        <td>
+                            <button type="button">Sửa</button>
+                            <button type="button">Xóa</button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>2</td>
+                        <td>Trần Thị B</td>
+                        <td>22123457</td>
+                        <td>b@example.com</td>
+                        <td>Thành viên</td>
+                        <td>Hoạt động</td>
+                        <td>
+                            <button type="button">Sửa</button>
+                            <button type="button">Xóa</button>
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>© 2026 ClubManager</p>
+    </footer>
+
+</body>
+
+</html>
