@@ -4,100 +4,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Danh sách các câu lạc bộ của người dùng trong hệ thống ClubManager.">
+
+    <meta
+        name="description"
+        content="Danh sách câu lạc bộ mà thành viên đang tham gia."
+    >
+
     <title>Câu lạc bộ của tôi | ClubManager</title>
+
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-    <header>
-        <h2>ClubManager</h2>
+    <header class="topbar">
 
-        <p>Hệ thống quản lý câu lạc bộ</p>
+        <div class="logo">
+            ClubManager
+        </div>
 
-        <p>
-            Người dùng:
+        <div class="topbar-search">
+            <input
+                type="search"
+                placeholder="Tìm kiếm..."
+            >
+        </div>
+
+        <div class="account">
             <strong>Nguyễn Văn A</strong>
-        </p>
+            <span>Thành viên</span>
+        </div>
+
     </header>
 
-    <nav>
+
+    <nav class="sidebar">
+
         <ul>
-            <li><a href="index.html">Câu lạc bộ</a></li>
-            <li><a href="thanh-vien.html">Thành viên</a></li>
-            <li><a href="su-kien.html">Sự kiện</a></li>
-            <li><a href="thu-chi.html">Thu - Chi</a></li>
-            <li><a href="thong-ke.html">Thống kê</a></li>
-            <li><a href="dang-nhap.html">Đăng xuất</a></li>
+            <li>
+                <a
+                    class="active"
+                    href="index.html"
+                >
+                    Câu lạc bộ của tôi
+                </a>
+            </li>
+
+            <li>
+                <a href="su-kien.html">
+                    Sự kiện
+                </a>
+            </li>
+
+            <li>
+                <a href="dang-nhap.html">
+                    Đăng xuất
+                </a>
+            </li>
         </ul>
+
     </nav>
 
-    <main>
 
-        <h1>Câu lạc bộ của tôi</h1>
+    <main class="content">
 
-        <p>Bạn đang tham gia 2 câu lạc bộ.</p>
+        <div class="page-heading">
+
+            <div>
+                <h1>Câu lạc bộ của tôi</h1>
+
+                <p>
+                    Bạn đang tham gia 2 câu lạc bộ.
+                </p>
+            </div>
+
+        </div>
+
 
         <section>
-            <h2>Tìm kiếm câu lạc bộ</h2>
 
-            <form>
-                <label for="tim-clb">Tên câu lạc bộ</label>
+            <div class="filter-bar">
 
                 <input
                     type="search"
-                    id="tim-clb"
-                    name="tim-clb"
-                    placeholder="Nhập tên câu lạc bộ"
+                    placeholder="Tìm kiếm câu lạc bộ..."
                 >
 
-                <button type="submit">Tìm kiếm</button>
-            </form>
-        </section>
+            </div>
 
-        <section>
-            <h2>Danh sách câu lạc bộ</h2>
 
-            <article>
-                <h3>CLB Tin học</h3>
+            <div class="club-grid">
 
-                <p>Số thành viên: 50</p>
+                <article class="club-card">
 
-                <p>Vai trò của tôi: Thành viên</p>
+                    <div class="club-image">
+                        Ảnh CLB
+                    </div>
 
-                <p>
-                    Câu lạc bộ dành cho sinh viên yêu thích
-                    công nghệ thông tin và lập trình.
-                </p>
+                    <h2>CLB Tin học</h2>
 
-                <a href="chi-tiet-clb.html">
-                    Xem chi tiết
-                </a>
-            </article>
+                    <p>
+                        <strong>Thành viên:</strong>
+                        50
+                    </p>
 
-            <article>
-                <h3>CLB Tiếng Anh</h3>
+                    <p>
+                        <strong>Vai trò:</strong>
+                        Thành viên
+                    </p>
 
-                <p>Số thành viên: 35</p>
+                    <p class="club-description">
+                        Câu lạc bộ dành cho sinh viên yêu thích
+                        công nghệ thông tin và lập trình.
+                    </p>
 
-                <p>Vai trò của tôi: Thành viên</p>
+                    <a
+                        class="btn-secondary"
+                        href="chi-tiet-clb.html"
+                    >
+                        Xem chi tiết
+                    </a>
 
-                <p>
-                    Nơi giao lưu, học tập và rèn luyện
-                    kỹ năng tiếng Anh.
-                </p>
+                </article>
 
-                <a href="chi-tiet-clb.html">
-                    Xem chi tiết
-                </a>
-            </article>
+
+                <article class="club-card">
+
+                    <div class="club-image">
+                        Ảnh CLB
+                    </div>
+
+                    <h2>CLB Tiếng Anh</h2>
+
+                    <p>
+                        <strong>Thành viên:</strong>
+                        35
+                    </p>
+
+                    <p>
+                        <strong>Vai trò:</strong>
+                        Thành viên
+                    </p>
+
+                    <p class="club-description">
+                        Nơi giao lưu, học tập và rèn luyện
+                        kỹ năng tiếng Anh.
+                    </p>
+
+                    <a
+                        class="btn-secondary"
+                        href="chi-tiet-clb.html"
+                    >
+                        Xem chi tiết
+                    </a>
+
+                </article>
+
+            </div>
 
         </section>
 
     </main>
 
+
     <footer>
-        <p>© 2026 ClubManager</p>
+        © 2026 ClubManager
     </footer>
 
 </body>

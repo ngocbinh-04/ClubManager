@@ -3,144 +3,256 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Trang điểm danh sự kiện của câu lạc bộ trong ClubManager.">
-    <title>Điểm danh sự kiện | ClubManager</title>
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Điểm danh thành viên tham gia sự kiện."
+    >
+
+    <title>Điểm danh | ClubManager</title>
+
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-    <header>
-        <h2>ClubManager</h2>
-        <p>CLB Tin học</p>
+    <header class="topbar">
+
+        <div class="logo">
+            ClubManager
+        </div>
+
+        <div class="account">
+            <strong>Nguyễn Văn A</strong>
+            <span>Quản trị viên</span>
+        </div>
+
     </header>
 
-    <nav>
+
+    <nav class="sidebar">
+
         <ul>
-            <li><a href="index.html">Câu lạc bộ</a></li>
-            <li><a href="thanh-vien.html">Thành viên</a></li>
-            <li><a href="su-kien.html">Sự kiện</a></li>
-            <li><a href="thu-chi.html">Thu - Chi</a></li>
-            <li><a href="thong-ke.html">Thống kê</a></li>
-            <li><a href="dang-nhap.html">Đăng xuất</a></li>
+
+            <li>
+                <a href="clb-quan-tri.html">
+                    Câu lạc bộ
+                </a>
+            </li>
+
+            <li>
+                <a href="dashboard.html">
+                    Tổng quan
+                </a>
+            </li>
+
+            <li>
+                <a
+                    class="active"
+                    href="su-kien.html"
+                >
+                    Sự kiện
+                </a>
+            </li>
+
+            <li>
+                <a href="thanh-vien.html">
+                    Thành viên
+                </a>
+            </li>
+
+            <li>
+                <a href="thu-chi.html">
+                    Thu - Chi
+                </a>
+            </li>
+
+            <li>
+                <a href="thong-ke.html">
+                    Thống kê
+                </a>
+            </li>
+
         </ul>
+
     </nav>
 
-    <main>
 
-        <h1>Điểm danh - Workshop Lập trình Web</h1>
+    <main class="content">
+
+        <div class="page-heading">
+
+            <div>
+
+                <h1>
+                    Điểm danh - Workshop Lập trình Web
+                </h1>
+
+                <p>
+                    10/11/2026 - Phòng A1
+                </p>
+
+            </div>
+
+            <a
+                class="btn-secondary"
+                href="su-kien.html"
+            >
+                Quay lại
+            </a>
+
+        </div>
+
 
         <section>
-            <h2>Thông tin sự kiện</h2>
 
-            <p>
-                <strong>Thời gian:</strong>
-                10/11/2026
-            </p>
+            <div class="filter-bar">
 
-            <p>
-                <strong>Địa điểm:</strong>
-                Phòng A1
-            </p>
-        </section>
+                <input
+                    type="search"
+                    placeholder="Tìm theo tên, mã sinh viên..."
+                >
 
-        <section>
-            <h2>Danh sách điểm danh</h2>
+                <select>
+                    <option>Tất cả</option>
+                    <option>Có mặt</option>
+                    <option>Vắng</option>
+                </select>
+
+            </div>
+
 
             <form>
 
-                <table border="1">
+                <div class="table-wrapper">
 
-                    <caption>
-                        Danh sách điểm danh Workshop Lập trình Web
-                    </caption>
+                    <table>
 
-                    <thead>
-                        <tr>
-                            <th scope="col">STT</th>
-                            <th scope="col">Họ tên</th>
-                            <th scope="col">Mã sinh viên</th>
-                            <th scope="col">Có mặt</th>
-                            <th scope="col">Vắng</th>
-                            <th scope="col">Ghi chú</th>
-                        </tr>
-                    </thead>
+                        <caption>
+                            Danh sách điểm danh
+                        </caption>
 
-                    <tbody>
+                        <thead>
 
-                        <tr>
-                            <td>1</td>
-                            <td>Nguyễn Văn A</td>
-                            <td>22123456</td>
+                            <tr>
+                                <th scope="col">STT</th>
+                                <th scope="col">Họ tên</th>
+                                <th scope="col">Mã SV</th>
+                                <th scope="col">Trạng thái</th>
+                                <th scope="col">Ghi chú</th>
+                            </tr>
 
-                            <td>
-                                <input
-                                    type="radio"
-                                    name="diem-danh-1"
-                                    value="co-mat"
-                                >
-                            </td>
+                        </thead>
 
-                            <td>
-                                <input
-                                    type="radio"
-                                    name="diem-danh-1"
-                                    value="vang"
-                                >
-                            </td>
 
-                            <td>
-                                <input
-                                    type="text"
-                                    name="ghi-chu-1"
-                                >
-                            </td>
-                        </tr>
+                        <tbody>
 
-                        <tr>
-                            <td>2</td>
-                            <td>Trần Thị B</td>
-                            <td>22123457</td>
+                            <tr>
 
-                            <td>
-                                <input
-                                    type="radio"
-                                    name="diem-danh-2"
-                                    value="co-mat"
-                                >
-                            </td>
+                                <td>1</td>
 
-                            <td>
-                                <input
-                                    type="radio"
-                                    name="diem-danh-2"
-                                    value="vang"
-                                >
-                            </td>
+                                <td>Nguyễn Văn A</td>
 
-                            <td>
-                                <input
-                                    type="text"
-                                    name="ghi-chu-2"
-                                >
-                            </td>
-                        </tr>
+                                <td>22123456</td>
 
-                    </tbody>
+                                <td>
 
-                </table>
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            name="tv1"
+                                            value="co-mat"
+                                        >
+                                        Có mặt
+                                    </label>
 
-                <button type="submit">
-                    Lưu điểm danh
-                </button>
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            name="tv1"
+                                            value="vang"
+                                        >
+                                        Vắng
+                                    </label>
+
+                                </td>
+
+                                <td>
+                                    <input
+                                        type="text"
+                                        placeholder="Ghi chú"
+                                    >
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>2</td>
+
+                                <td>Trần Thị B</td>
+
+                                <td>22123457</td>
+
+                                <td>
+
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            name="tv2"
+                                            value="co-mat"
+                                        >
+                                        Có mặt
+                                    </label>
+
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            name="tv2"
+                                            value="vang"
+                                        >
+                                        Vắng
+                                    </label>
+
+                                </td>
+
+                                <td>
+                                    <input
+                                        type="text"
+                                        placeholder="Ghi chú"
+                                    >
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <p>
+                    <button type="submit">
+                        Lưu điểm danh
+                    </button>
+                </p>
 
             </form>
+
         </section>
 
     </main>
 
+
     <footer>
-        <p>© 2026 ClubManager</p>
+        © 2026 ClubManager
     </footer>
 
 </body>

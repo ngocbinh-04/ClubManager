@@ -3,102 +3,206 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Danh sách các câu lạc bộ do quản trị viên quản lý trong ClubManager.">
-    <title>Danh sách câu lạc bộ | ClubManager</title>
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Danh sách câu lạc bộ do quản trị viên quản lý."
+    >
+
+    <title>Quản lý câu lạc bộ | ClubManager</title>
+
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-    <header>
-        <h2>ClubManager</h2>
-        <p>Hệ thống quản lý câu lạc bộ</p>
+    <header class="topbar">
 
-        <p>
-            <strong>Nguyễn Văn A</strong> - Quản trị viên
-        </p>
+        <div class="logo">
+            ClubManager
+        </div>
+
+        <div class="topbar-search">
+            <input
+                type="search"
+                placeholder="Tìm kiếm..."
+            >
+        </div>
+
+        <div class="account">
+            <strong>Nguyễn Văn A</strong>
+            <span>Quản trị viên</span>
+        </div>
+
     </header>
 
-    <nav>
+
+    <nav class="sidebar">
+
         <ul>
-            <li><a href="clb-quan-tri.html">Câu lạc bộ</a></li>
-            <li><a href="thanh-vien.html">Thành viên</a></li>
-            <li><a href="su-kien.html">Sự kiện</a></li>
-            <li><a href="thu-chi.html">Thu - Chi</a></li>
-            <li><a href="thong-ke.html">Thống kê</a></li>
-            <li><a href="dang-nhap.html">Đăng xuất</a></li>
+
+            <li>
+                <a
+                    class="active"
+                    href="clb-quan-tri.html"
+                >
+                    Câu lạc bộ
+                </a>
+            </li>
+
+            <li>
+                <a href="dashboard.html">
+                    Tổng quan
+                </a>
+            </li>
+
+            <li>
+                <a href="thanh-vien.html">
+                    Thành viên
+                </a>
+            </li>
+
+            <li>
+                <a href="su-kien.html">
+                    Sự kiện
+                </a>
+            </li>
+
+            <li>
+                <a href="thu-chi.html">
+                    Thu - Chi
+                </a>
+            </li>
+
+            <li>
+                <a href="thong-ke.html">
+                    Thống kê
+                </a>
+            </li>
+
+            <li>
+                <a href="dang-nhap.html">
+                    Đăng xuất
+                </a>
+            </li>
+
         </ul>
+
     </nav>
 
-    <main>
 
-        <h1>Danh sách câu lạc bộ</h1>
+    <main class="content">
 
-        <p>Bạn đang quản lý 3 câu lạc bộ.</p>
+        <div class="page-heading">
 
-        <section>
-            <h2>Thao tác</h2>
+            <div>
+                <h1>Danh sách câu lạc bộ</h1>
+
+                <p>
+                    Bạn đang quản lý 3 câu lạc bộ.
+                </p>
+            </div>
 
             <button type="button">
-                Thêm câu lạc bộ
+                + Thêm câu lạc bộ
             </button>
 
-            <form>
-                <label for="tim-clb-admin">
-                    Tìm kiếm câu lạc bộ
-                </label>
+        </div>
+
+
+        <section>
+
+            <div class="filter-bar">
 
                 <input
                     type="search"
-                    id="tim-clb-admin"
-                    name="tim-clb-admin"
-                    placeholder="Nhập tên câu lạc bộ"
+                    placeholder="Tìm kiếm câu lạc bộ..."
                 >
 
-                <button type="submit">
-                    Tìm kiếm
-                </button>
-            </form>
-        </section>
+                <select>
+                    <option>Tất cả</option>
+                    <option>Đang hoạt động</option>
+                    <option>Tạm dừng</option>
+                </select>
 
-        <section>
-            <h2>Các câu lạc bộ đang quản lý</h2>
+            </div>
 
-            <article>
-                <h3>CLB Tin học</h3>
 
-                <p>50 thành viên</p>
+            <div class="club-grid">
 
-                <a href="dashboard.html">
-                    Quản lý câu lạc bộ
-                </a>
-            </article>
+                <article class="club-card">
 
-            <article>
-                <h3>CLB Tiếng Anh</h3>
+                    <div class="club-image">
+                        Ảnh CLB
+                    </div>
 
-                <p>35 thành viên</p>
+                    <h2>CLB Tin học</h2>
 
-                <a href="dashboard.html">
-                    Quản lý câu lạc bộ
-                </a>
-            </article>
+                    <p>Thành viên: 50</p>
 
-            <article>
-                <h3>CLB Tình nguyện</h3>
+                    <a
+                        class="btn-secondary"
+                        href="dashboard.html"
+                    >
+                        Quản lý câu lạc bộ
+                    </a>
 
-                <p>40 thành viên</p>
+                </article>
 
-                <a href="dashboard.html">
-                    Quản lý câu lạc bộ
-                </a>
-            </article>
+
+                <article class="club-card">
+
+                    <div class="club-image">
+                        Ảnh CLB
+                    </div>
+
+                    <h2>CLB Tiếng Anh</h2>
+
+                    <p>Thành viên: 35</p>
+
+                    <a
+                        class="btn-secondary"
+                        href="dashboard.html"
+                    >
+                        Quản lý câu lạc bộ
+                    </a>
+
+                </article>
+
+
+                <article class="club-card">
+
+                    <div class="club-image">
+                        Ảnh CLB
+                    </div>
+
+                    <h2>CLB Tình nguyện</h2>
+
+                    <p>Thành viên: 40</p>
+
+                    <a
+                        class="btn-secondary"
+                        href="dashboard.html"
+                    >
+                        Quản lý câu lạc bộ
+                    </a>
+
+                </article>
+
+            </div>
+
         </section>
 
     </main>
 
+
     <footer>
-        <p>© 2026 ClubManager</p>
+        © 2026 ClubManager
     </footer>
 
 </body>

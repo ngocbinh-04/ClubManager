@@ -3,116 +3,231 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Trang quản lý thành viên câu lạc bộ trong ClubManager.">
-    <title>Quản lý thành viên | ClubManager</title>
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Quản lý thành viên CLB Tin học."
+    >
+
+    <title>Thành viên | ClubManager</title>
+
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-    <header>
-        <h2>ClubManager</h2>
-        <p>CLB Tin học</p>
+    <header class="topbar">
+
+        <div class="logo">
+            ClubManager
+        </div>
+
+        <div class="topbar-search">
+            <input
+                type="search"
+                placeholder="Tìm kiếm..."
+            >
+        </div>
+
+        <div class="account">
+            <strong>Nguyễn Văn A</strong>
+            <span>Quản trị viên</span>
+        </div>
+
     </header>
 
-    <nav>
+
+    <nav class="sidebar">
+
         <ul>
-            <li><a href="index.html">Câu lạc bộ</a></li>
-            <li><a href="thanh-vien.html">Thành viên</a></li>
-            <li><a href="su-kien.html">Sự kiện</a></li>
-            <li><a href="thu-chi.html">Thu - Chi</a></li>
-            <li><a href="thong-ke.html">Thống kê</a></li>
-            <li><a href="dang-nhap.html">Đăng xuất</a></li>
+
+            <li>
+                <a href="clb-quan-tri.html">
+                    Câu lạc bộ
+                </a>
+            </li>
+
+            <li>
+                <a href="dashboard.html">
+                    Tổng quan
+                </a>
+            </li>
+
+            <li>
+                <a
+                    class="active"
+                    href="thanh-vien.html"
+                >
+                    Thành viên
+                </a>
+            </li>
+
+            <li>
+                <a href="su-kien.html">
+                    Sự kiện
+                </a>
+            </li>
+
+            <li>
+                <a href="thu-chi.html">
+                    Thu - Chi
+                </a>
+            </li>
+
+            <li>
+                <a href="thong-ke.html">
+                    Thống kê
+                </a>
+            </li>
+
+            <li>
+                <a href="dang-nhap.html">
+                    Đăng xuất
+                </a>
+            </li>
+
         </ul>
+
     </nav>
 
-    <main>
 
-        <h1>Quản lý thành viên</h1>
+    <main class="content">
+
+        <div class="page-heading">
+
+            <div>
+                <h1>
+                    Danh sách thành viên
+                </h1>
+
+                <p>
+                    CLB Tin học
+                </p>
+            </div>
+
+            <button type="button">
+                + Thêm thành viên
+            </button>
+
+        </div>
+
 
         <section>
-            <h2>Tìm kiếm thành viên</h2>
 
-            <form>
-                <label for="tim-thanh-vien">
-                    Tên thành viên
-                </label>
+            <div class="filter-bar">
 
                 <input
                     type="search"
-                    id="tim-thanh-vien"
-                    name="tim-thanh-vien"
-                    placeholder="Nhập tên thành viên"
+                    placeholder="Tìm theo tên, mã sinh viên..."
                 >
 
-                <button type="submit">
-                    Tìm kiếm
-                </button>
-            </form>
-        </section>
+                <select>
+                    <option>Tất cả vai trò</option>
+                    <option>Chủ nhiệm</option>
+                    <option>Thành viên</option>
+                </select>
 
-        <section>
-            <h2>Danh sách thành viên</h2>
+            </div>
 
-            <button type="button">
-                Thêm thành viên
-            </button>
 
-            <table border="1">
+            <div class="table-wrapper">
 
-                <caption>
-                    Danh sách thành viên CLB Tin học
-                </caption>
+                <table>
 
-                <thead>
-                    <tr>
-                        <th scope="col">STT</th>
-                        <th scope="col">Họ tên</th>
-                        <th scope="col">Mã sinh viên</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Vai trò</th>
-                        <th scope="col">Trạng thái</th>
-                        <th scope="col">Thao tác</th>
-                    </tr>
-                </thead>
+                    <caption>
+                        Danh sách thành viên CLB Tin học
+                    </caption>
 
-                <tbody>
+                    <thead>
+                        <tr>
+                            <th scope="col">STT</th>
+                            <th scope="col">Họ tên</th>
+                            <th scope="col">Mã SV</th>
+                            <th scope="col">Vai trò</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Trạng thái</th>
+                            <th scope="col">Thao tác</th>
+                        </tr>
+                    </thead>
 
-                    <tr>
-                        <td>1</td>
-                        <td>Nguyễn Văn A</td>
-                        <td>22123456</td>
-                        <td>a@example.com</td>
-                        <td>Chủ nhiệm</td>
-                        <td>Hoạt động</td>
-                        <td>
-                            <button type="button">Sửa</button>
-                            <button type="button">Xóa</button>
-                        </td>
-                    </tr>
+                    <tbody>
 
-                    <tr>
-                        <td>2</td>
-                        <td>Trần Thị B</td>
-                        <td>22123457</td>
-                        <td>b@example.com</td>
-                        <td>Thành viên</td>
-                        <td>Hoạt động</td>
-                        <td>
-                            <button type="button">Sửa</button>
-                            <button type="button">Xóa</button>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>Nguyễn Văn A</td>
+                            <td>22123456</td>
+                            <td>Chủ nhiệm</td>
+                            <td>a@example.com</td>
+                            <td>
+                                <span class="badge badge-green">
+                                    Hoạt động
+                                </span>
+                            </td>
 
-                </tbody>
+                            <td class="table-actions">
+                                <button>Sửa</button>
+                                <button class="btn-danger">Xóa</button>
+                            </td>
+                        </tr>
 
-            </table>
+
+                        <tr>
+                            <td>2</td>
+                            <td>Trần Thị B</td>
+                            <td>22123457</td>
+                            <td>Thành viên</td>
+                            <td>b@example.com</td>
+
+                            <td>
+                                <span class="badge badge-green">
+                                    Hoạt động
+                                </span>
+                            </td>
+
+                            <td class="table-actions">
+                                <button>Sửa</button>
+                                <button class="btn-danger">Xóa</button>
+                            </td>
+                        </tr>
+
+
+                        <tr>
+                            <td>3</td>
+                            <td>Lê Văn C</td>
+                            <td>22123458</td>
+                            <td>Thành viên</td>
+                            <td>c@example.com</td>
+
+                            <td>
+                                <span class="badge badge-red">
+                                    Tạm dừng
+                                </span>
+                            </td>
+
+                            <td class="table-actions">
+                                <button>Sửa</button>
+                                <button class="btn-danger">Xóa</button>
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
         </section>
 
     </main>
 
+
     <footer>
-        <p>© 2026 ClubManager</p>
+        © 2026 ClubManager
     </footer>
 
 </body>

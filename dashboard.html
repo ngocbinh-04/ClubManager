@@ -3,110 +3,280 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Dashboard quản lý câu lạc bộ trong ClubManager.">
-    <title>Dashboard CLB Tin học | ClubManager</title>
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Dashboard quản lý CLB Tin học."
+    >
+
+    <title>Dashboard | ClubManager</title>
+
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-    <header>
-        <h2>ClubManager</h2>
+    <header class="topbar">
 
-        <p>
-            <strong>CLB Tin học</strong>
-        </p>
+        <div class="logo">
+            ClubManager
+        </div>
 
-        <p>
-            Nguyễn Văn A - Quản trị viên
-        </p>
+        <div class="topbar-search">
+            <input
+                type="search"
+                placeholder="Tìm kiếm..."
+            >
+        </div>
+
+        <div class="account">
+            <strong>Nguyễn Văn A</strong>
+            <span>Quản trị viên</span>
+        </div>
+
     </header>
 
-    <nav>
+
+    <nav class="sidebar">
+
         <ul>
-            <li><a href="clb-quan-tri.html">Câu lạc bộ</a></li>
-            <li><a href="dashboard.html">Tổng quan</a></li>
-            <li><a href="thanh-vien.html">Thành viên</a></li>
-            <li><a href="su-kien.html">Sự kiện</a></li>
-            <li><a href="thu-chi.html">Thu - Chi</a></li>
-            <li><a href="thong-ke.html">Thống kê</a></li>
-            <li><a href="dang-nhap.html">Đăng xuất</a></li>
+
+            <li>
+                <a href="clb-quan-tri.html">
+                    Câu lạc bộ
+                </a>
+            </li>
+
+            <li>
+                <a
+                    class="active"
+                    href="dashboard.html"
+                >
+                    Tổng quan
+                </a>
+            </li>
+
+            <li>
+                <a href="thanh-vien.html">
+                    Thành viên
+                </a>
+            </li>
+
+            <li>
+                <a href="su-kien.html">
+                    Sự kiện
+                </a>
+            </li>
+
+            <li>
+                <a href="thu-chi.html">
+                    Thu - Chi
+                </a>
+            </li>
+
+            <li>
+                <a href="thong-ke.html">
+                    Thống kê
+                </a>
+            </li>
+
+            <li>
+                <a href="dang-nhap.html">
+                    Đăng xuất
+                </a>
+            </li>
+
         </ul>
+
     </nav>
 
-    <main>
 
-        <h1>Dashboard - CLB Tin học</h1>
+    <main class="content">
 
-        <section>
-            <h2>Thông tin tổng quan</h2>
+        <div class="page-heading">
 
-            <article>
-                <h3>Thành viên</h3>
-                <p>50</p>
-            </article>
+            <div>
+                <h1>Dashboard - CLB Tin học</h1>
 
-            <article>
-                <h3>Sự kiện</h3>
-                <p>8</p>
-            </article>
+                <p>
+                    Tổng quan hoạt động câu lạc bộ.
+                </p>
+            </div>
 
-            <article>
-                <h3>Tổng thu</h3>
-                <p>5.000.000 VNĐ</p>
-            </article>
+        </div>
 
-            <article>
-                <h3>Tổng chi</h3>
-                <p>2.500.000 VNĐ</p>
-            </article>
-
-            <article>
-                <h3>Số dư</h3>
-                <p>2.500.000 VNĐ</p>
-            </article>
-        </section>
 
         <section>
-            <h2>Sự kiện sắp diễn ra</h2>
 
-            <ul>
-                <li>
-                    Workshop Lập trình Web - 10/11/2026
-                </li>
+            <div class="stats-grid">
 
-                <li>
-                    Cuộc thi Hackathon - 20/12/2026
-                </li>
-            </ul>
+                <article class="stat-card">
+                    <span class="stat-title">
+                        Thành viên
+                    </span>
 
-            <a href="su-kien.html">
-                Xem tất cả sự kiện
-            </a>
+                    <strong class="stat-number">
+                        50
+                    </strong>
+                </article>
+
+
+                <article class="stat-card blue">
+                    <span class="stat-title">
+                        Sự kiện
+                    </span>
+
+                    <strong class="stat-number">
+                        8
+                    </strong>
+                </article>
+
+
+                <article class="stat-card">
+                    <span class="stat-title">
+                        Tổng thu
+                    </span>
+
+                    <strong class="stat-number">
+                        5.000.000đ
+                    </strong>
+                </article>
+
+
+                <article class="stat-card red">
+                    <span class="stat-title">
+                        Tổng chi
+                    </span>
+
+                    <strong class="stat-number">
+                        2.500.000đ
+                    </strong>
+                </article>
+
+            </div>
+
         </section>
 
-        <section>
-            <h2>Thu - chi gần đây</h2>
 
-            <ul>
-                <li>
-                    Thu quỹ thành viên: +1.000.000 VNĐ
-                </li>
+        <div class="dashboard-grid">
 
-                <li>
-                    Mua tài liệu: -500.000 VNĐ
-                </li>
-            </ul>
+            <section>
 
-            <a href="thu-chi.html">
-                Xem tất cả giao dịch
-            </a>
-        </section>
+                <div class="section-heading">
+
+                    <h2>
+                        Sự kiện sắp diễn ra
+                    </h2>
+
+                    <a href="su-kien.html">
+                        Xem tất cả
+                    </a>
+
+                </div>
+
+
+                <div class="event-item">
+
+                    <div>
+                        <strong>
+                            Workshop Lập trình Web
+                        </strong>
+
+                        <p>
+                            10/11/2026 - Phòng A1
+                        </p>
+                    </div>
+
+                    <span class="badge badge-orange">
+                        Sắp diễn ra
+                    </span>
+
+                </div>
+
+
+                <div class="event-item">
+
+                    <div>
+                        <strong>
+                            Cuộc thi Hackathon
+                        </strong>
+
+                        <p>
+                            20/12/2026 - Hội trường
+                        </p>
+                    </div>
+
+                    <span class="badge badge-orange">
+                        Sắp diễn ra
+                    </span>
+
+                </div>
+
+            </section>
+
+
+            <section>
+
+                <div class="section-heading">
+
+                    <h2>
+                        Thu - chi gần đây
+                    </h2>
+
+                    <a href="thu-chi.html">
+                        Xem tất cả
+                    </a>
+
+                </div>
+
+
+                <div class="transaction-item">
+
+                    <div>
+                        <span class="badge badge-green">
+                            Thu
+                        </span>
+
+                        Quỹ thành viên
+                    </div>
+
+                    <strong class="money-positive">
+                        +1.000.000đ
+                    </strong>
+
+                </div>
+
+
+                <div class="transaction-item">
+
+                    <div>
+                        <span class="badge badge-red">
+                            Chi
+                        </span>
+
+                        Mua tài liệu
+                    </div>
+
+                    <strong class="money-negative">
+                        -500.000đ
+                    </strong>
+
+                </div>
+
+            </section>
+
+        </div>
 
     </main>
 
+
     <footer>
-        <p>© 2026 ClubManager</p>
+        © 2026 ClubManager
     </footer>
 
 </body>

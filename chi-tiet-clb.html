@@ -3,112 +3,156 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Thông tin chi tiết câu lạc bộ trong hệ thống ClubManager.">
-    <title>Chi tiết câu lạc bộ | ClubManager</title>
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Thông tin chi tiết CLB Tin học."
+    >
+
+    <title>CLB Tin học | ClubManager</title>
+
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-    <header>
-        <h2>ClubManager</h2>
+    <header class="topbar">
 
-        <p>Hệ thống quản lý câu lạc bộ</p>
+        <div class="logo">
+            ClubManager
+        </div>
 
-        <p>
-            Người dùng:
+        <div class="topbar-search">
+            <input
+                type="search"
+                placeholder="Tìm kiếm..."
+            >
+        </div>
+
+        <div class="account">
             <strong>Nguyễn Văn A</strong>
-        </p>
+            <span>Thành viên</span>
+        </div>
+
     </header>
 
-    <nav>
+
+    <nav class="sidebar">
+
         <ul>
-            <li><a href="index.html">Câu lạc bộ</a></li>
-            <li><a href="thanh-vien.html">Thành viên</a></li>
-            <li><a href="su-kien.html">Sự kiện</a></li>
-            <li><a href="thu-chi.html">Thu - Chi</a></li>
-            <li><a href="thong-ke.html">Thống kê</a></li>
-            <li><a href="dang-nhap.html">Đăng xuất</a></li>
+
+            <li>
+                <a
+                    class="active"
+                    href="index.html"
+                >
+                    Câu lạc bộ của tôi
+                </a>
+            </li>
+
+            <li>
+                <a href="su-kien.html">
+                    Sự kiện
+                </a>
+            </li>
+
+            <li>
+                <a href="dang-nhap.html">
+                    Đăng xuất
+                </a>
+            </li>
+
         </ul>
+
     </nav>
 
-    <main>
 
-        <h1>CLB Tin học</h1>
+    <main class="content">
+
+        <div class="page-heading">
+
+            <div>
+                <h1>CLB Tin học</h1>
+
+                <p>
+                    Thông tin chi tiết câu lạc bộ.
+                </p>
+            </div>
+
+        </div>
+
 
         <section>
-            <h2>Thông tin câu lạc bộ</h2>
 
-            <p>
-                <strong>Tên câu lạc bộ:</strong>
-                CLB Tin học
-            </p>
+            <div class="club-detail">
 
-            <p>
-                <strong>Ngày thành lập:</strong>
-                15/10/2022
-            </p>
+                <div class="club-detail-image">
+                    Ảnh CLB Tin học
+                </div>
 
-            <p>
-                <strong>Lĩnh vực hoạt động:</strong>
-                Công nghệ thông tin
-            </p>
 
-            <p>
-                <strong>Số thành viên:</strong>
-                50
-            </p>
+                <div>
+
+                    <h2>Thông tin câu lạc bộ</h2>
+
+                    <ul class="info-list">
+
+                        <li>
+                            <strong>Tên CLB:</strong>
+                            CLB Tin học
+                        </li>
+
+                        <li>
+                            <strong>Ngày thành lập:</strong>
+                            15/10/2022
+                        </li>
+
+                        <li>
+                            <strong>Lĩnh vực:</strong>
+                            Công nghệ thông tin
+                        </li>
+
+                        <li>
+                            <strong>Số thành viên:</strong>
+                            50
+                        </li>
+
+                        <li>
+                            <strong>Vai trò của tôi:</strong>
+                            Thành viên
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
         </section>
 
+
         <section>
+
             <h2>Giới thiệu</h2>
 
             <p>
                 CLB Tin học là nơi kết nối sinh viên yêu thích
-                công nghệ, lập trình và ứng dụng công nghệ thông tin.
+                công nghệ thông tin, lập trình và ứng dụng
+                công nghệ trong học tập và đời sống.
             </p>
+
         </section>
-
-        <section>
-            <h2>Chức năng</h2>
-
-            <ul>
-                <li>
-                    <a href="thanh-vien.html">
-                        Xem thành viên
-                    </a>
-                </li>
-
-                <li>
-                    <a href="su-kien.html">
-                        Xem sự kiện
-                    </a>
-                </li>
-
-                <li>
-                    <a href="thu-chi.html">
-                        Xem thu - chi
-                    </a>
-                </li>
-
-                <li>
-                    <a href="thong-ke.html">
-                        Xem thống kê
-                    </a>
-                </li>
-            </ul>
-        </section>
-
-        <p>
-            <a href="index.html">
-                Quay lại danh sách câu lạc bộ
-            </a>
-        </p>
 
     </main>
 
+
     <footer>
-        <p>© 2026 ClubManager</p>
+        © 2026 ClubManager
     </footer>
 
 </body>

@@ -4,53 +4,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Trang đăng nhập hệ thống quản lý câu lạc bộ ClubManager.">
+    <meta
+        name="description"
+        content="Đăng nhập hệ thống quản lý câu lạc bộ ClubManager."
+    >
+
     <title>Đăng nhập | ClubManager</title>
+
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body>
+<body class="login-page">
 
-    <main>
-        <section>
+    <main class="login-card">
+
+        <div class="login-logo">
             <h1>ClubManager</h1>
 
-            <p>Hệ thống quản lý câu lạc bộ</p>
+            <p>
+                Hệ thống quản lý câu lạc bộ
+            </p>
+        </div>
 
-            <form action="index.html" method="get">
+        <form
+            class="login-form"
+            action="index.html"
+            method="get"
+        >
 
-                <div>
-                    <label for="ten-dang-nhap">Tên đăng nhập</label>
-                    <input
-                        type="text"
-                        id="ten-dang-nhap"
-                        name="ten-dang-nhap"
-                        required
-                    >
-                </div>
+            <div class="form-group">
+                <label for="username">
+                    Tên đăng nhập
+                </label>
 
-                <div>
-                    <label for="mat-khau">Mật khẩu</label>
-                    <input
-                        type="password"
-                        id="mat-khau"
-                        name="mat-khau"
-                        required
-                    >
-                </div>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    required
+                    placeholder="Nhập tên đăng nhập"
+                >
+            </div>
 
-                <div>
-                    <input
-                        type="checkbox"
-                        id="ghi-nho"
-                        name="ghi-nho"
-                    >
-                    <label for="ghi-nho">Ghi nhớ đăng nhập</label>
-                </div>
+            <div class="form-group">
+                <label for="password">
+                    Mật khẩu
+                </label>
 
-                <button type="submit">Đăng nhập</button>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    required
+                    placeholder="Nhập mật khẩu"
+                >
+            </div>
 
-            </form>
-        </section>
+            <div class="login-options">
+
+                <input
+                    type="checkbox"
+                    id="remember"
+                    name="remember"
+                >
+
+                <label for="remember">
+                    Ghi nhớ đăng nhập
+                </label>
+
+            </div>
+
+            <button type="submit">
+                Đăng nhập
+            </button>
+
+        </form>
+
     </main>
 
 </body>

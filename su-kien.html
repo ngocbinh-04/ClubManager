@@ -3,134 +3,247 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Trang quản lý sự kiện câu lạc bộ trong ClubManager.">
-    <title>Quản lý sự kiện | ClubManager</title>
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Quản lý sự kiện CLB Tin học."
+    >
+
+    <title>Sự kiện | ClubManager</title>
+
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-    <header>
-        <h2>ClubManager</h2>
-        <p>CLB Tin học</p>
+    <header class="topbar">
+
+        <div class="logo">
+            ClubManager
+        </div>
+
+        <div class="topbar-search">
+            <input
+                type="search"
+                placeholder="Tìm kiếm..."
+            >
+        </div>
+
+        <div class="account">
+            <strong>Nguyễn Văn A</strong>
+            <span>Quản trị viên</span>
+        </div>
+
     </header>
 
-    <nav>
+
+    <nav class="sidebar">
+
         <ul>
-            <li><a href="index.html">Câu lạc bộ</a></li>
-            <li><a href="thanh-vien.html">Thành viên</a></li>
-            <li><a href="su-kien.html">Sự kiện</a></li>
-            <li><a href="thu-chi.html">Thu - Chi</a></li>
-            <li><a href="thong-ke.html">Thống kê</a></li>
-            <li><a href="dang-nhap.html">Đăng xuất</a></li>
+
+            <li>
+                <a href="clb-quan-tri.html">
+                    Câu lạc bộ
+                </a>
+            </li>
+
+            <li>
+                <a href="dashboard.html">
+                    Tổng quan
+                </a>
+            </li>
+
+            <li>
+                <a href="thanh-vien.html">
+                    Thành viên
+                </a>
+            </li>
+
+            <li>
+                <a
+                    class="active"
+                    href="su-kien.html"
+                >
+                    Sự kiện
+                </a>
+            </li>
+
+            <li>
+                <a href="thu-chi.html">
+                    Thu - Chi
+                </a>
+            </li>
+
+            <li>
+                <a href="thong-ke.html">
+                    Thống kê
+                </a>
+            </li>
+
+            <li>
+                <a href="dang-nhap.html">
+                    Đăng xuất
+                </a>
+            </li>
+
         </ul>
+
     </nav>
 
-    <main>
 
-        <h1>Quản lý sự kiện</h1>
+    <main class="content">
+
+        <div class="page-heading">
+
+            <div>
+                <h1>Danh sách sự kiện</h1>
+
+                <p>
+                    CLB Tin học
+                </p>
+            </div>
+
+            <button type="button">
+                + Thêm sự kiện
+            </button>
+
+        </div>
+
 
         <section>
-            <h2>Tìm kiếm sự kiện</h2>
 
-            <form>
-                <label for="tim-su-kien">
-                    Tên sự kiện
-                </label>
+            <div class="filter-bar">
 
                 <input
                     type="search"
-                    id="tim-su-kien"
-                    name="tim-su-kien"
-                    placeholder="Nhập tên sự kiện"
+                    placeholder="Tìm theo tên sự kiện..."
                 >
 
-                <button type="submit">
-                    Tìm kiếm
-                </button>
-            </form>
-        </section>
+                <select>
+                    <option>Tất cả trạng thái</option>
+                    <option>Sắp diễn ra</option>
+                    <option>Đang diễn ra</option>
+                    <option>Đã diễn ra</option>
+                </select>
 
-        <section>
-            <h2>Danh sách sự kiện</h2>
+            </div>
 
-            <button type="button">
-                Thêm sự kiện
-            </button>
 
-            <table border="1">
+            <div class="table-wrapper">
 
-                <caption>
-                    Danh sách sự kiện CLB Tin học
-                </caption>
+                <table>
 
-                <thead>
-                    <tr>
-                        <th scope="col">STT</th>
-                        <th scope="col">Tên sự kiện</th>
-                        <th scope="col">Thời gian</th>
-                        <th scope="col">Địa điểm</th>
-                        <th scope="col">Số người tham gia</th>
-                        <th scope="col">Trạng thái</th>
-                        <th scope="col">Thao tác</th>
-                    </tr>
-                </thead>
+                    <caption>
+                        Danh sách sự kiện CLB Tin học
+                    </caption>
 
-                <tbody>
+                    <thead>
+                        <tr>
+                            <th scope="col">STT</th>
+                            <th scope="col">Tên sự kiện</th>
+                            <th scope="col">Thời gian</th>
+                            <th scope="col">Địa điểm</th>
+                            <th scope="col">Tham gia</th>
+                            <th scope="col">Trạng thái</th>
+                            <th scope="col">Thao tác</th>
+                        </tr>
+                    </thead>
 
-                    <tr>
-                        <td>1</td>
-                        <td>Workshop Lập trình Web</td>
-                        <td>10/11/2026</td>
-                        <td>Phòng A1</td>
-                        <td>45</td>
-                        <td>Sắp diễn ra</td>
-                        <td>
-                            <a href="diem-danh.html">
-                                Điểm danh
-                            </a>
+                    <tbody>
 
-                            <button type="button">
-                                Sửa
-                            </button>
+                        <tr>
+                            <td>1</td>
 
-                            <button type="button">
-                                Xóa
-                            </button>
-                        </td>
-                    </tr>
+                            <td>
+                                Workshop Lập trình Web
+                            </td>
 
-                    <tr>
-                        <td>2</td>
-                        <td>Cuộc thi Hackathon</td>
-                        <td>20/12/2026</td>
-                        <td>Hội trường</td>
-                        <td>80</td>
-                        <td>Sắp diễn ra</td>
-                        <td>
-                            <a href="diem-danh.html">
-                                Điểm danh
-                            </a>
+                            <td>10/11/2026</td>
 
-                            <button type="button">
-                                Sửa
-                            </button>
+                            <td>Phòng A1</td>
 
-                            <button type="button">
-                                Xóa
-                            </button>
-                        </td>
-                    </tr>
+                            <td>45</td>
 
-                </tbody>
+                            <td>
+                                <span class="badge badge-orange">
+                                    Sắp diễn ra
+                                </span>
+                            </td>
 
-            </table>
+                            <td class="table-actions">
+
+                                <a
+                                    class="btn-secondary"
+                                    href="diem-danh.html"
+                                >
+                                    Điểm danh
+                                </a>
+
+                                <button>Sửa</button>
+
+                                <button class="btn-danger">
+                                    Xóa
+                                </button>
+
+                            </td>
+                        </tr>
+
+
+                        <tr>
+                            <td>2</td>
+
+                            <td>
+                                Cuộc thi Hackathon
+                            </td>
+
+                            <td>20/12/2026</td>
+
+                            <td>Hội trường</td>
+
+                            <td>80</td>
+
+                            <td>
+                                <span class="badge badge-orange">
+                                    Sắp diễn ra
+                                </span>
+                            </td>
+
+                            <td class="table-actions">
+
+                                <a
+                                    class="btn-secondary"
+                                    href="diem-danh.html"
+                                >
+                                    Điểm danh
+                                </a>
+
+                                <button>Sửa</button>
+
+                                <button class="btn-danger">
+                                    Xóa
+                                </button>
+
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
         </section>
 
     </main>
 
+
     <footer>
-        <p>© 2026 ClubManager</p>
+        © 2026 ClubManager
     </footer>
 
 </body>
