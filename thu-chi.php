@@ -1,269 +1,433 @@
 <?php
 
+require_once 'includes/quan-ly-auth.php';
+require_once 'config/database.php';
+
+$userId = $_SESSION['user_id'];
+
 $pageTitle = 'Quản lý Thu - Chi';
+$activePage = 'thu-chi';
 
-$userName = 'Nguyễn Văn A';
-$userRole = 'Quản trị viên';
 
-$activePage = 'finance';
+/* =====================================================
+   1. CLB DO USER QUẢN LÝ
+   ===================================================== */
 
-include 'includes/header.php';
-include 'includes/sidebar.php';
+$sqlClb = "
+    SELECT id, ten_clb
+    FROM cau_lac_bo
+    WHERE nguoi_tao_id = :user_id
+    ORDER BY ten_clb ASC
+";
+
+$stmtClb = $pdo->prepare($sqlClb);
+
+$stmtClb->execute([
+    'user_id' => $userId
+]);
+
+$danhSachClb = $stmtClb->fetchAll();
+
+
+/* =====================================================
+   2. CLB ĐANG CHỌN
+   ===================================================== */
+
+$clbId = (int) ($_GET['clb_id'] ?? 0);
+
+if ($clbId <= 0 && !empty($danhSachClb)) {
+    $clbId = (int) $danhSachClb[0]['id'];
+}
+
+
+$clbHienTai = null;
+
+foreach ($danhSachClb as $clb) {
+
+    if ((int) $clb['id'] === $clbId) {
+        $clbHienTai = $clb;
+        break;
+    }
+}
+
+if ($clbId > 0 && !$clbHienTai) {
+    header('Location: thu-chi.php');
+    exit;
+}
+
+
+/* =====================================================
+   3. LẤY DANH SÁCH THU CHI
+   ===================================================== */
+
+$danhSachThuChi = [];
+
+if ($clbId > 0) {
+
+    $sqlThuChi = "
+        SELECT
+            tc.*,
+            nd.ho_ten AS nguoi_thuc_hien
+
+        FROM thu_chi tc
+
+        INNER JOIN nguoi_dung nd
+            ON tc.nguoi_thuc_hien_id = nd.id
+
+        WHERE tc.cau_lac_bo_id = :clb_id
+
+        ORDER BY tc.ngay_giao_dich DESC, tc.id DESC
+    ";
+
+    $stmtThuChi = $pdo->prepare($sqlThuChi);
+
+    $stmtThuChi->execute([
+        'clb_id' => $clbId
+    ]);
+
+    $danhSachThuChi = $stmtThuChi->fetchAll();
+}
+
+
+/* =====================================================
+   4. TÍNH TỔNG THU / CHI / SỐ DƯ
+   ===================================================== */
+
+$tongThu = 0;
+$tongChi = 0;
+
+foreach ($danhSachThuChi as $giaoDich) {
+
+    if ($giaoDich['loai'] === 'thu') {
+        $tongThu += (float) $giaoDich['so_tien'];
+    }
+
+    if ($giaoDich['loai'] === 'chi') {
+        $tongChi += (float) $giaoDich['so_tien'];
+    }
+}
+
+$soDu = $tongThu - $tongChi;
 
 ?>
 
-<main class="content">
+<?php require_once 'includes/header.php'; ?>
 
-    <div class="page-heading">
+<div class="app-layout">
 
-        <div>
+    <?php require_once 'includes/sidebar.php'; ?>
 
-            <h1>
-                Danh sách giao dịch
-            </h1>
+    <main class="main-content">
 
-            <p>
-                CLB Tin học
-            </p>
+        <section class="page-header">
 
-        </div>
+            <div>
 
+                <h1>Quản lý Thu - Chi</h1>
 
-        <div>
+                <p>
+                    Theo dõi tài chính của từng câu lạc bộ.
+                </p>
 
-            <button type="button">
-                + Thêm khoản thu
-            </button>
+            </div>
 
-            <button
-                type="button"
-                class="btn-danger"
-            >
-                + Thêm khoản chi
-            </button>
 
-        </div>
+            <?php if ($clbId > 0): ?>
 
-    </div>
+                <a
+                    href="them-thu-chi.php?clb_id=<?= $clbId ?>"
+                    class="btn btn-primary"
+                >
+                    + Thêm giao dịch
+                </a>
 
+            <?php endif; ?>
 
-    <section>
+        </section>
 
-        <div class="stats-grid">
 
-            <article class="stat-card">
+        <?php if (!empty($_GET['success'])): ?>
 
-                <span class="stat-title">
-                    Tổng thu
-                </span>
+            <div class="alert-success">
 
-                <strong class="stat-number">
-                    5.000.000đ
-                </strong>
+                <?php if ($_GET['success'] === 'them'): ?>
 
-            </article>
+                    Thêm giao dịch thành công.
 
+                <?php elseif ($_GET['success'] === 'sua'): ?>
 
-            <article class="stat-card red">
+                    Cập nhật giao dịch thành công.
 
-                <span class="stat-title">
-                    Tổng chi
-                </span>
+                <?php elseif ($_GET['success'] === 'xoa'): ?>
 
-                <strong class="stat-number">
-                    2.500.000đ
-                </strong>
+                    Xóa giao dịch thành công.
 
-            </article>
+                <?php endif; ?>
 
+            </div>
 
-            <article class="stat-card blue">
+        <?php endif; ?>
 
-                <span class="stat-title">
-                    Số dư
-                </span>
 
-                <strong class="stat-number">
-                    2.500.000đ
-                </strong>
+        <?php if (empty($danhSachClb)): ?>
 
-            </article>
+            <div class="empty-state">
 
-        </div>
+                <p>
+                    Bạn chưa quản lý câu lạc bộ nào.
+                </p>
 
-    </section>
+            </div>
 
+        <?php else: ?>
 
-    <section>
+            <div class="card">
 
-        <div class="filter-bar">
+                <form method="GET">
 
-            <input
-                type="search"
-                placeholder="Tìm theo nội dung giao dịch..."
-            >
+                    <div class="form-group">
 
-            <select>
+                        <label for="clb_id">
+                            Chọn câu lạc bộ
+                        </label>
 
-                <option>
-                    Tất cả loại
-                </option>
+                        <select
+                            name="clb_id"
+                            id="clb_id"
+                            onchange="this.form.submit()"
+                        >
 
-                <option>
-                    Thu
-                </option>
+                            <?php foreach ($danhSachClb as $clb): ?>
 
-                <option>
-                    Chi
-                </option>
+                                <option
+                                    value="<?= $clb['id'] ?>"
+                                    <?= $clbId == $clb['id'] ? 'selected' : '' ?>
+                                >
+                                    <?= htmlspecialchars($clb['ten_clb']) ?>
+                                </option>
 
-            </select>
+                            <?php endforeach; ?>
 
-        </div>
+                        </select>
 
+                    </div>
 
-        <div class="table-wrapper">
+                </form>
 
-            <table>
+            </div>
 
-                <caption>
-                    Danh sách thu - chi
-                </caption>
 
-                <thead>
+            <!-- THỐNG KÊ TÀI CHÍNH -->
 
-                <tr>
+            <section class="dashboard-cards">
 
-                    <th scope="col">
-                        STT
-                    </th>
+                <div class="stat-card">
 
-                    <th scope="col">
-                        Ngày
-                    </th>
+                    <h3>
+                        <?= number_format($tongThu, 0, ',', '.') ?> đ
+                    </h3>
 
-                    <th scope="col">
-                        Loại
-                    </th>
+                    <p>Tổng thu</p>
 
-                    <th scope="col">
-                        Nội dung
-                    </th>
+                </div>
 
-                    <th scope="col">
-                        Số tiền
-                    </th>
 
-                    <th scope="col">
-                        Người thực hiện
-                    </th>
+                <div class="stat-card">
 
-                    <th scope="col">
-                        Thao tác
-                    </th>
+                    <h3>
+                        <?= number_format($tongChi, 0, ',', '.') ?> đ
+                    </h3>
 
-                </tr>
+                    <p>Tổng chi</p>
 
-                </thead>
+                </div>
 
 
-                <tbody>
+                <div class="stat-card">
 
-                <tr>
+                    <h3>
+                        <?= number_format($soDu, 0, ',', '.') ?> đ
+                    </h3>
 
-                    <td>1</td>
+                    <p>Số dư</p>
 
-                    <td>
-                        05/10/2026
-                    </td>
+                </div>
 
-                    <td>
+            </section>
 
-                        <span class="badge badge-green">
-                            Thu
-                        </span>
 
-                    </td>
+            <section class="content-section">
 
-                    <td>
-                        Quỹ thành viên
-                    </td>
+                <div class="section-header">
 
-                    <td>
-                        1.000.000đ
-                    </td>
+                    <div>
 
-                    <td>
-                        Nguyễn Văn A
-                    </td>
+                        <h2>
+                            <?= htmlspecialchars($clbHienTai['ten_clb']) ?>
+                        </h2>
 
-                    <td class="table-actions">
+                        <p>
+                            <?= count($danhSachThuChi) ?>
+                            giao dịch
+                        </p>
 
-                        <button>
-                            Sửa
-                        </button>
+                    </div>
 
-                        <button class="btn-danger">
-                            Xóa
-                        </button>
+                </div>
 
-                    </td>
 
-                </tr>
+                <?php if (!empty($danhSachThuChi)): ?>
 
+                    <div class="table-wrapper">
 
-                <tr>
+                        <table>
 
-                    <td>2</td>
+                            <thead>
 
-                    <td>
-                        10/10/2026
-                    </td>
+                                <tr>
 
-                    <td>
+                                    <th>Ngày</th>
 
-                        <span class="badge badge-red">
-                            Chi
-                        </span>
+                                    <th>Loại</th>
 
-                    </td>
+                                    <th>Nội dung</th>
 
-                    <td>
-                        Mua tài liệu
-                    </td>
+                                    <th>Số tiền</th>
 
-                    <td>
-                        500.000đ
-                    </td>
+                                    <th>Người thực hiện</th>
 
-                    <td>
-                        Nguyễn Văn A
-                    </td>
+                                    <th>Ghi chú</th>
 
-                    <td class="table-actions">
+                                    <th>Thao tác</th>
 
-                        <button>
-                            Sửa
-                        </button>
+                                </tr>
 
-                        <button class="btn-danger">
-                            Xóa
-                        </button>
+                            </thead>
 
-                    </td>
 
-                </tr>
+                            <tbody>
 
-                </tbody>
+                                <?php foreach ($danhSachThuChi as $gd): ?>
 
-            </table>
+                                    <tr>
 
-        </div>
+                                        <td>
+                                            <?= htmlspecialchars($gd['ngay_giao_dich']) ?>
+                                        </td>
 
-    </section>
 
-</main>
+                                        <td>
 
-<?php
-include 'includes/footer.php';
-?>
+                                            <?php if ($gd['loai'] === 'thu'): ?>
+
+                                                <span class="badge badge-success">
+                                                    Thu
+                                                </span>
+
+                                            <?php else: ?>
+
+                                                <span class="badge badge-warning">
+                                                    Chi
+                                                </span>
+
+                                            <?php endif; ?>
+
+                                        </td>
+
+
+                                        <td>
+                                            <?= htmlspecialchars($gd['noi_dung']) ?>
+                                        </td>
+
+
+                                        <td>
+                                            <?= number_format(
+                                                $gd['so_tien'],
+                                                0,
+                                                ',',
+                                                '.'
+                                            ) ?> đ
+                                        </td>
+
+
+                                        <td>
+                                            <?= htmlspecialchars($gd['nguoi_thuc_hien']) ?>
+                                        </td>
+
+
+                                        <td>
+                                            <?= htmlspecialchars($gd['ghi_chu'] ?? '') ?>
+                                        </td>
+
+
+                                        <td>
+
+                                            <a
+                                                href="sua-thu-chi.php?id=<?= $gd['id'] ?>&clb_id=<?= $clbId ?>"
+                                                class="btn"
+                                            >
+                                                Sửa
+                                            </a>
+
+
+                                            <form
+                                                method="POST"
+                                                action="xoa-thu-chi.php"
+                                                style="display:inline;"
+                                                onsubmit="return confirm('Bạn có chắc muốn xóa giao dịch này không?');"
+                                            >
+
+                                                <input
+                                                    type="hidden"
+                                                    name="id"
+                                                    value="<?= $gd['id'] ?>"
+                                                >
+
+                                                <input
+                                                    type="hidden"
+                                                    name="clb_id"
+                                                    value="<?= $clbId ?>"
+                                                >
+
+                                                <button
+                                                    type="submit"
+                                                    class="btn"
+                                                >
+                                                    Xóa
+                                                </button>
+
+                                            </form>
+
+                                        </td>
+
+                                    </tr>
+
+                                <?php endforeach; ?>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                <?php else: ?>
+
+                    <div class="empty-state">
+
+                        <p>
+                            Chưa có giao dịch thu chi nào.
+                        </p>
+
+                    </div>
+
+                <?php endif; ?>
+
+            </section>
+
+        <?php endif; ?>
+
+    </main>
+
+</div>
+
+<?php require_once 'includes/footer.php'; ?>

@@ -1,81 +1,59 @@
-/* =========================================================
-   1. BIẾN MÀU - CLUBMANAGER
-   ========================================================= */
-
 :root {
     --primary: #2fa889;
-    --primary-dark: #21836d;
-    --primary-light: #dff5ef;
+    --primary-dark: #23836b;
+    --primary-light: #dff5ee;
 
-    --background: #f5f8f7;
+    --secondary: #f4fbf8;
+
     --white: #ffffff;
+    --background: #f6faf9;
 
-    --text: #263238;
-    --text-light: #66767d;
+    --text: #24332f;
+    --text-light: #6d7f79;
 
-    --border: #dce7e4;
+    --border: #dce9e4;
 
-    --green-light: #e3f7ed;
-    --green: #258b62;
+    --success: #2e9d76;
+    --success-bg: #e4f6ef;
 
-    --red-light: #fde8e8;
-    --red: #dc5555;
+    --warning: #d59b3d;
+    --warning-bg: #fff4df;
 
-    --orange-light: #fff0dc;
-    --orange: #dc872d;
+    --danger: #cf5d5d;
+    --danger-bg: #fdeaea;
 
-    --blue-light: #e5f0fb;
-    --blue: #367ec7;
+    --shadow: 0 4px 18px rgba(47, 168, 137, 0.08);
 
-    --radius: 10px;
-
-    --shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    --radius: 14px;
 }
 
 
-/* =========================================================
-   2. CHUẨN HÓA
-   ========================================================= */
+/* =====================================================
+   RESET
+   ===================================================== */
 
-*,
-*::before,
-*::after {
+* {
     box-sizing: border-box;
 }
 
 html {
-    font-size: 16px;
+    scroll-behavior: smooth;
 }
 
 body {
     margin: 0;
 
-    font-family:
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
 
     background: var(--background);
+    color: var(--text);
 
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
 a {
     color: inherit;
     text-decoration: none;
-}
-
-a:focus-visible,
-button:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
-    outline: 3px solid rgba(47, 168, 137, 0.25);
-    outline-offset: 2px;
 }
 
 button,
@@ -86,202 +64,413 @@ textarea {
 }
 
 
-/* =========================================================
-   3. BỐ CỤC CHUNG
-   ========================================================= */
-
-body:not(.login-page) {
-    display: grid;
-
-    min-height: 100vh;
-
-    grid-template-areas:
-        "header"
-        "nav"
-        "main"
-        "footer";
-
-    grid-template-rows:
-        auto auto 1fr auto;
-}
+/* =====================================================
+   TOPBAR
+   ===================================================== */
 
 .topbar {
-    grid-area: header;
+    position: fixed;
+
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 72px;
 
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    gap: 15px;
+    justify-content: space-between;
 
-    padding: 14px 20px;
+    padding: 0 28px;
 
     background: var(--white);
 
     border-bottom: 1px solid var(--border);
 
-    box-shadow: var(--shadow);
+    z-index: 1000;
 }
 
-.logo {
-    font-size: 20px;
-    font-weight: 700;
+.topbar-left h2 {
+    margin: 0;
+
     color: var(--primary-dark);
+
+    font-size: 22px;
 }
 
-.topbar-search {
-    flex: 1;
-    min-width: 200px;
+.topbar-right {
+    display: flex;
+    align-items: center;
+
+    gap: 18px;
 }
 
-.topbar-search input {
-    width: 100%;
-    max-width: 420px;
-}
-
-.account {
+.user-info {
     display: flex;
     flex-direction: column;
 
+    text-align: right;
+
+    line-height: 1.3;
+}
+
+.user-info strong {
     font-size: 14px;
 }
 
-.account span {
+.user-info span {
+    margin-top: 3px;
+
     color: var(--text-light);
+
+    font-size: 12px;
 }
 
 
-/* =========================================================
-   4. SIDEBAR
-   ========================================================= */
+/* =====================================================
+   APP LAYOUT
+   ===================================================== */
+
+.app-layout {
+    min-height: 100vh;
+
+    padding-top: 72px;
+}
+
+
+/* =====================================================
+   SIDEBAR
+   ===================================================== */
 
 .sidebar {
-    grid-area: nav;
+    position: fixed;
 
-    background: #edf7f4;
+    top: 72px;
+    left: 0;
+    bottom: 0;
 
-    border-bottom: 1px solid var(--border);
+    width: 240px;
 
-    padding: 12px;
+    padding: 24px 16px;
+
+    background: var(--white);
+
+    border-right: 1px solid var(--border);
+
+    overflow-y: auto;
+
+    z-index: 900;
 }
 
-.sidebar ul {
+.sidebar-logo {
+    margin-bottom: 22px;
+
+    padding: 0 12px;
+}
+
+.sidebar-logo h2 {
+    margin: 0;
+
+    color: var(--primary);
+
+    font-size: 20px;
+}
+
+.sidebar-menu {
     display: flex;
     flex-direction: column;
-    gap: 6px;
 
-    margin: 0;
-    padding: 0;
-
-    list-style: none;
+    gap: 7px;
 }
 
-.sidebar a {
+.sidebar-menu a {
     display: block;
 
     padding: 11px 14px;
 
-    border-radius: 8px;
+    border-radius: 10px;
 
-    font-weight: 500;
+    color: var(--text);
 
     transition: 0.2s;
 }
 
-.sidebar a:hover {
-    background: #dcefe9;
-}
+.sidebar-menu a:hover {
+    background: var(--primary-light);
 
-.sidebar a.active {
-    background: #cceee5;
     color: var(--primary-dark);
-    font-weight: 700;
 }
 
+.sidebar-menu a.active {
+    background: var(--primary);
 
-/* =========================================================
-   5. MAIN
-   ========================================================= */
-
-.content {
-    grid-area: main;
-
-    width: 100%;
-    max-width: 1400px;
-
-    margin: 0 auto;
-
-    padding: 22px 16px;
-}
-
-.page-heading {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-
-    margin-bottom: 20px;
-}
-
-.page-heading h1 {
-    margin: 0;
-
-    font-size: 26px;
-}
-
-.page-heading p {
-    margin: 5px 0 0;
-
-    color: var(--text-light);
-}
-
-
-/* =========================================================
-   6. SECTION
-   ========================================================= */
-
-section {
-    padding: 20px;
-
-    margin-bottom: 20px;
-
-    background: var(--white);
-
-    border: 1px solid var(--border);
-
-    border-radius: var(--radius);
-
-    box-shadow: var(--shadow);
-}
-
-section h2 {
-    margin-top: 0;
-
-    font-size: 19px;
-}
-
-.section-heading {
-    display: flex;
-
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
-
-    margin-bottom: 15px;
-}
-
-.section-heading h2 {
-    margin: 0;
-}
-
-.section-heading a {
-    color: var(--primary-dark);
+    color: var(--white);
 
     font-weight: 600;
 }
 
 
-/* =========================================================
-   7. FORM
-   ========================================================= */
+/* =====================================================
+   MAIN CONTENT
+   ===================================================== */
+
+.main-content {
+    margin-left: 240px;
+
+    padding: 30px;
+
+    min-height: calc(100vh - 72px);
+
+    min-width: 0;
+}
+
+
+/* =====================================================
+   PAGE HEADER
+   ===================================================== */
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 24px;
+}
+
+.page-header h1 {
+    margin: 0 0 5px;
+
+    font-size: 28px;
+
+    color: var(--text);
+}
+
+.page-header p {
+    margin: 0;
+
+    color: var(--text-light);
+}
+
+
+/* =====================================================
+   CONTENT SECTION
+   ===================================================== */
+
+.content-section {
+    margin-top: 28px;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 16px;
+}
+
+.section-header h2 {
+    margin: 0 0 4px;
+
+    font-size: 21px;
+}
+
+.section-header p {
+    margin: 0;
+
+    color: var(--text-light);
+
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   BUTTONS
+   ===================================================== */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 38px;
+
+    padding: 8px 14px;
+
+    border: 1px solid var(--border);
+    border-radius: 9px;
+
+    background: var(--white);
+
+    color: var(--text);
+
+    cursor: pointer;
+
+    transition: 0.2s;
+
+    white-space: nowrap;
+}
+
+.btn:hover {
+    background: var(--secondary);
+
+    border-color: #bfd8cf;
+}
+
+.btn-primary {
+    background: var(--primary);
+
+    border-color: var(--primary);
+
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+
+    border-color: var(--primary-dark);
+}
+
+.btn-secondary {
+    background: var(--primary-light);
+
+    border-color: var(--primary-light);
+
+    color: var(--primary-dark);
+}
+
+.btn-secondary:hover {
+    background: #ccece2;
+}
+
+
+/* =====================================================
+   CARD
+   ===================================================== */
+
+.card {
+    background: var(--white);
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+
+    padding: 22px;
+
+    box-shadow: var(--shadow);
+}
+
+.card-grid {
+    display: grid;
+
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    gap: 18px;
+}
+
+.club-card {
+    display: flex;
+    flex-direction: column;
+
+    gap: 12px;
+}
+
+.club-card p {
+    margin: 0;
+
+    color: var(--text-light);
+}
+
+.club-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 12px;
+}
+
+.club-card-header h3 {
+    margin: 0;
+
+    font-size: 18px;
+}
+
+.card-actions {
+    margin-top: auto;
+
+    padding-top: 6px;
+}
+
+
+/* =====================================================
+   DASHBOARD
+   ===================================================== */
+
+.dashboard-cards {
+    display: grid;
+
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    gap: 18px;
+
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: var(--white);
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+
+    padding: 22px;
+
+    box-shadow: var(--shadow);
+}
+
+.stat-card h3 {
+    margin: 0 0 7px;
+
+    color: var(--primary-dark);
+
+    font-size: 25px;
+}
+
+.stat-card p {
+    margin: 0;
+
+    color: var(--text-light);
+
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   FORMS
+   ===================================================== */
+
+form {
+    margin: 0;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-weight: 600;
+
+    font-size: 14px;
+}
 
 input,
 select,
@@ -290,572 +479,452 @@ textarea {
 
     padding: 10px 12px;
 
-    border: 1px solid #cbd9d5;
-
-    border-radius: 8px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
 
     background: var(--white);
+
+    color: var(--text);
+
+    outline: none;
+
+    transition: 0.2s;
 }
 
 input:focus,
 select:focus,
 textarea:focus {
     border-color: var(--primary);
+
+    box-shadow: 0 0 0 3px rgba(47, 168, 137, 0.1);
 }
 
-.form-group {
-    display: flex;
-    flex-direction: column;
+textarea {
+    min-height: 100px;
 
-    gap: 6px;
+    resize: vertical;
 }
 
-.form-group label {
-    font-weight: 600;
-}
-
-.filter-bar {
-    display: flex;
-    flex-direction: column;
-
-    gap: 10px;
-
-    margin-bottom: 20px;
+form .btn {
+    margin-right: 7px;
 }
 
 
-/* =========================================================
-   8. BUTTON
-   ========================================================= */
+/* =====================================================
+   TABLE
+   ===================================================== */
 
-button,
-.btn-primary,
-.btn-secondary,
-.btn-danger {
-    display: inline-block;
+.table-wrapper {
+    width: 100%;
 
-    padding: 9px 15px;
-
-    border-radius: 8px;
-
-    border: none;
-
-    cursor: pointer;
-
-    font-weight: 600;
-
-    text-align: center;
-
-    transition: 0.2s;
-}
-
-button,
-.btn-primary {
-    background: var(--primary);
-    color: white;
-}
-
-button:hover,
-.btn-primary:hover {
-    background: var(--primary-dark);
-}
-
-.btn-secondary {
-    background: #edf7f4;
-
-    color: var(--text);
-
-    border: 1px solid var(--border);
-}
-
-.btn-secondary:hover {
-    background: #dff1ec;
-}
-
-.btn-danger {
-    background: var(--red-light);
-    color: var(--red);
-}
-
-
-/* =========================================================
-   9. CLUB CARD
-   ========================================================= */
-
-.club-grid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(auto-fit, minmax(230px, 1fr));
-
-    gap: 20px;
-}
-
-.club-card {
-    display: flex;
-    flex-direction: column;
-
-    gap: 8px;
-
-    padding: 16px;
+    overflow-x: auto;
 
     background: var(--white);
 
     border: 1px solid var(--border);
-
-    border-radius: var(--radius);
-}
-
-.club-card h2 {
-    margin: 0;
-
-    font-size: 18px;
-}
-
-.club-card p {
-    margin: 2px 0;
-}
-
-.club-image {
-    height: 140px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: #e6ecea;
-
-    border-radius: 8px;
-
-    color: #899995;
-
-    font-weight: 600;
-}
-
-.club-description {
-    flex: 1;
-
-    color: var(--text-light);
-}
-
-
-/* =========================================================
-   10. DASHBOARD
-   ========================================================= */
-
-.stats-grid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(auto-fit, minmax(170px, 1fr));
-
-    gap: 15px;
-}
-
-.stat-card {
-    padding: 18px;
-
     border-radius: var(--radius);
 
-    border: 1px solid #d5eee7;
-
-    background: #e9f8f3;
+    box-shadow: var(--shadow);
 }
 
-.stat-card.red {
-    background: var(--red-light);
+table {
+    width: 100%;
 
-    border-color: #f5d5d5;
+    border-collapse: collapse;
+
+    min-width: 760px;
 }
 
-.stat-card.blue {
-    background: var(--blue-light);
-
-    border-color: #d5e5f5;
+thead {
+    background: var(--secondary);
 }
 
-.stat-title {
-    display: block;
-
-    color: var(--text-light);
-
-    margin-bottom: 6px;
-}
-
-.stat-number {
-    display: block;
-
-    font-size: 23px;
-
-    color: var(--primary-dark);
-}
-
-.stat-card.red .stat-number {
-    color: var(--red);
-}
-
-.stat-card.blue .stat-number {
-    color: var(--blue);
-}
-
-.dashboard-grid {
-    display: grid;
-
-    grid-template-columns: 1fr;
-
-    gap: 20px;
-}
-
-.event-item,
-.transaction-item {
-    display: flex;
-
-    align-items: center;
-    justify-content: space-between;
-
-    gap: 15px;
-
-    padding: 13px 0;
+th,
+td {
+    padding: 13px 14px;
 
     border-bottom: 1px solid var(--border);
-}
 
-.event-item:last-child,
-.transaction-item:last-child {
-    border-bottom: none;
-}
-
-.event-item p {
-    margin: 4px 0 0;
-
-    color: var(--text-light);
+    text-align: left;
+    vertical-align: middle;
 
     font-size: 14px;
 }
 
+th {
+    color: var(--primary-dark);
 
-/* =========================================================
-   11. BADGE
-   ========================================================= */
+    font-weight: 700;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr:hover {
+    background: #fbfefd;
+}
+
+td .btn {
+    margin: 2px;
+
+    padding: 6px 10px;
+
+    min-height: 34px;
+
+    font-size: 13px;
+}
+
+
+/* =====================================================
+   BADGE
+   ===================================================== */
 
 .badge {
     display: inline-block;
 
     padding: 4px 9px;
 
-    border-radius: 20px;
+    border-radius: 999px;
+
+    background: #edf2f0;
+
+    color: #596862;
 
     font-size: 12px;
 
     font-weight: 600;
+
+    white-space: nowrap;
 }
 
-.badge-green {
-    background: var(--green-light);
-    color: var(--green);
+.badge-success {
+    background: var(--success-bg);
+
+    color: var(--success);
 }
 
-.badge-red {
-    background: var(--red-light);
-    color: var(--red);
-}
+.badge-warning {
+    background: var(--warning-bg);
 
-.badge-orange {
-    background: var(--orange-light);
-    color: var(--orange);
-}
-
-.badge-blue {
-    background: var(--blue-light);
-    color: var(--blue);
-}
-
-.money-positive {
-    color: var(--green);
-}
-
-.money-negative {
-    color: var(--red);
+    color: #a87320;
 }
 
 
-/* =========================================================
-   12. TABLE
-   ========================================================= */
+/* =====================================================
+   ALERT
+   ===================================================== */
 
-.table-wrapper {
-    width: 100%;
+.alert-success,
+.alert-error {
+    margin-bottom: 18px;
 
-    overflow-x: auto;
+    padding: 12px 15px;
+
+    border-radius: 10px;
+
+    font-size: 14px;
 }
 
-table {
-    width: 100%;
+.alert-success {
+    background: var(--success-bg);
 
-    min-width: 720px;
+    border: 1px solid #bde8d8;
 
-    border-collapse: collapse;
+    color: #237c5e;
+}
+
+.alert-error {
+    background: var(--danger-bg);
+
+    border: 1px solid #f0bcbc;
+
+    color: var(--danger);
+}
+
+
+/* =====================================================
+   EMPTY STATE
+   ===================================================== */
+
+.empty-state {
+    padding: 38px 25px;
 
     background: var(--white);
-}
 
-caption {
-    margin-bottom: 10px;
-
-    font-weight: 600;
-
-    text-align: left;
-}
-
-th,
-td {
-    padding: 11px;
-
-    border: 1px solid var(--border);
-
-    text-align: left;
-
-    vertical-align: middle;
-}
-
-th {
-    background: #edf7f4;
-}
-
-tbody tr:hover {
-    background: #f6fbf9;
-}
-
-.table-actions {
-    display: flex;
-
-    gap: 6px;
-}
-
-
-/* =========================================================
-   13. CHI TIẾT CLB
-   ========================================================= */
-
-.club-detail {
-    display: grid;
-
-    grid-template-columns: 1fr;
-
-    gap: 20px;
-}
-
-.club-detail-image {
-    min-height: 220px;
-
-    display: flex;
-
-    justify-content: center;
-    align-items: center;
-
-    background: #e6ecea;
-
+    border: 1px dashed #bdd8cf;
     border-radius: var(--radius);
 
+    text-align: center;
+
     color: var(--text-light);
-
-    font-weight: 600;
 }
 
-.info-list {
-    margin: 0;
-    padding: 0;
-
-    list-style: none;
-}
-
-.info-list li {
-    padding: 9px 0;
-
-    border-bottom: 1px solid var(--border);
+.empty-state p {
+    margin: 0 0 14px;
 }
 
 
-/* =========================================================
-   14. PLACEHOLDER BIỂU ĐỒ
-   ========================================================= */
-
-.chart-placeholder {
-    min-height: 300px;
-}
-
-
-/* =========================================================
-   15. ĐĂNG NHẬP
-   ========================================================= */
+/* =====================================================
+   LOGIN
+   ===================================================== */
 
 .login-page {
     min-height: 100vh;
 
     display: flex;
-
-    justify-content: center;
     align-items: center;
+    justify-content: center;
 
-    padding: 20px;
+    padding: 30px;
 
     background:
         linear-gradient(
             135deg,
-            #e8f8f3,
+            #e4f7f1,
             #f7fbfa
         );
 }
 
 .login-card {
     width: 100%;
-    max-width: 410px;
+    max-width: 420px;
 
-    padding: 35px;
+    padding: 34px;
 
     background: var(--white);
 
     border: 1px solid var(--border);
+    border-radius: 18px;
 
-    border-radius: 15px;
-
-    box-shadow: var(--shadow);
+    box-shadow:
+        0 10px 40px
+        rgba(47, 168, 137, 0.12);
 }
 
-.login-logo {
+.login-card h1 {
+    margin: 0 0 8px;
+
+    color: var(--primary-dark);
+
     text-align: center;
 
-    margin-bottom: 25px;
+    font-size: 28px;
 }
 
-.login-logo h1 {
-    margin-bottom: 5px;
+.login-card > p {
+    margin: 0 0 25px;
+
+    color: var(--text-light);
+
+    text-align: center;
+}
+
+.login-card .btn-primary {
+    width: 100%;
+
+    margin-top: 5px;
+}
+
+
+/* =====================================================
+   DETAIL
+   ===================================================== */
+
+.club-detail-image {
+    width: 100%;
+
+    min-height: 220px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: var(--radius);
+
+    background: var(--primary-light);
 
     color: var(--primary-dark);
 }
 
-.login-logo p {
-    margin: 0;
+.chart-placeholder {
+    min-height: 300px;
+}
+
+
+/* =====================================================
+   FOOTER
+   ===================================================== */
+
+.site-footer {
+    margin-left: 240px;
+
+    padding: 22px 30px;
+
+    border-top: 1px solid var(--border);
 
     color: var(--text-light);
-}
-
-.login-form {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 15px;
-}
-
-.login-options {
-    display: flex;
-
-    align-items: center;
-
-    gap: 8px;
-}
-
-.login-options input {
-    width: auto;
-}
-
-.login-form button {
-    width: 100%;
-
-    padding: 11px;
-}
-
-
-/* =========================================================
-   16. FOOTER
-   ========================================================= */
-
-footer {
-    grid-area: footer;
-
-    padding: 16px;
 
     text-align: center;
 
+    font-size: 13px;
+
     background: var(--white);
+}
 
-    color: var(--text-light);
-
-    border-top: 1px solid var(--border);
+.site-footer p {
+    margin: 0;
 }
 
 
-/* =========================================================
-   17. RESPONSIVE - TABLET
-   ========================================================= */
+/* =====================================================
+   RESPONSIVE <= 1100
+   ===================================================== */
 
-@media (min-width: 768px) {
+@media (max-width: 1100px) {
 
-    .page-heading {
-        flex-direction: row;
-
-        justify-content: space-between;
-        align-items: center;
+    .dashboard-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .filter-bar {
-        flex-direction: row;
+    .card-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
-
-    .filter-bar input {
-        flex: 1;
-    }
-
-    .filter-bar select {
-        width: 200px;
-    }
-
-    .club-detail {
-        grid-template-columns: 300px 1fr;
-    }
-
 }
 
 
-/* =========================================================
-   18. RESPONSIVE - DESKTOP
-   ========================================================= */
+/* =====================================================
+   RESPONSIVE <= 768
+   ===================================================== */
 
-@media (min-width: 1024px) {
+@media (max-width: 768px) {
 
-    body:not(.login-page) {
-        grid-template-columns: 220px 1fr;
+    .topbar {
+        min-height: 68px;
+        height: auto;
 
-        grid-template-areas:
-            "header header"
-            "nav main"
-            "nav footer";
+        padding: 12px 16px;
+    }
 
-        grid-template-rows:
-            auto 1fr auto;
+    .topbar-left h2 {
+        font-size: 18px;
+    }
+
+    .user-info {
+        display: none;
+    }
+
+    .app-layout {
+        padding-top: 68px;
     }
 
     .sidebar {
-        border-right: 1px solid var(--border);
+        position: static;
 
-        border-bottom: none;
+        width: 100%;
 
-        min-height: calc(100vh - 70px);
+        padding: 10px;
+
+        border-right: none;
+        border-bottom: 1px solid var(--border);
     }
 
-    .sidebar ul {
-        position: sticky;
-
-        top: 15px;
+    .sidebar-logo {
+        display: none;
     }
 
-    .content {
-        padding: 28px 30px;
+    .sidebar-menu {
+        flex-direction: row;
+
+        gap: 5px;
+
+        overflow-x: auto;
     }
 
-    .dashboard-grid {
-        grid-template-columns: 1fr 1fr;
+    .sidebar-menu a {
+        flex: 0 0 auto;
+
+        padding: 9px 12px;
+
+        font-size: 13px;
     }
 
+    .main-content {
+        margin-left: 0;
+
+        padding: 18px;
+    }
+
+    .site-footer {
+        margin-left: 0;
+    }
+
+    .page-header,
+    .section-header {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+    .dashboard-cards,
+    .card-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .page-header h1 {
+        font-size: 23px;
+    }
+
+    .card {
+        padding: 17px;
+    }
+
+    .stat-card {
+        padding: 18px;
+    }
+
+    .login-card {
+        padding: 24px;
+    }
+}
+
+
+/* =====================================================
+   RESPONSIVE <= 480
+   ===================================================== */
+
+@media (max-width: 480px) {
+
+    .topbar-right .btn {
+        padding: 7px 10px;
+
+        font-size: 12px;
+    }
+
+    .main-content {
+        padding: 14px;
+    }
+
+    .page-header {
+        margin-bottom: 18px;
+    }
+
+    .page-header h1 {
+        font-size: 21px;
+    }
+
+    .section-header h2 {
+        font-size: 19px;
+    }
+
+    .btn {
+        font-size: 13px;
+    }
+
+    th,
+    td {
+        padding: 10px;
+
+        font-size: 13px;
+    }
 }

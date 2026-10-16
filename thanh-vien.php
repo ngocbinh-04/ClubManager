@@ -1,210 +1,432 @@
 <?php
 
+require_once 'includes/quan-ly-auth.php';
+require_once 'config/database.php';
+
+$userId = $_SESSION['user_id'];
+
 $pageTitle = 'Quản lý thành viên';
+$activePage = 'thanh-vien';
 
-$userName = 'Nguyễn Văn A';
-$userRole = 'Quản trị viên';
 
-$activePage = 'member';
+/* =====================================================
+   1. LẤY DANH SÁCH CLB DO USER QUẢN LÝ
+   ===================================================== */
 
-include 'includes/header.php';
-include 'includes/sidebar.php';
+$sqlClb = "
+    SELECT id, ten_clb
+    FROM cau_lac_bo
+    WHERE nguoi_tao_id = :user_id
+    ORDER BY ten_clb ASC
+";
+
+$stmtClb = $pdo->prepare($sqlClb);
+
+$stmtClb->execute([
+    'user_id' => $userId
+]);
+
+$danhSachClb = $stmtClb->fetchAll();
+
+
+/* =====================================================
+   2. XÁC ĐỊNH CLB ĐANG CHỌN
+   ===================================================== */
+
+$clbId = (int) ($_GET['clb_id'] ?? 0);
+
+/* Nếu chưa chọn thì lấy CLB đầu tiên */
+if ($clbId <= 0 && !empty($danhSachClb)) {
+    $clbId = (int) $danhSachClb[0]['id'];
+}
+
+
+/* =====================================================
+   3. KIỂM TRA CLB CÓ THUỘC USER KHÔNG
+   ===================================================== */
+
+$clbHienTai = null;
+
+if ($clbId > 0) {
+
+    $sqlCheck = "
+        SELECT *
+        FROM cau_lac_bo
+        WHERE id = :clb_id
+          AND nguoi_tao_id = :user_id
+        LIMIT 1
+    ";
+
+    $stmtCheck = $pdo->prepare($sqlCheck);
+
+    $stmtCheck->execute([
+        'clb_id' => $clbId,
+        'user_id' => $userId
+    ]);
+
+    $clbHienTai = $stmtCheck->fetch();
+
+    if (!$clbHienTai) {
+        header('Location: thanh-vien.php');
+        exit;
+    }
+}
+
+
+/* =====================================================
+   4. LẤY DANH SÁCH THÀNH VIÊN
+   ===================================================== */
+
+$danhSachThanhVien = [];
+
+if ($clbId > 0) {
+
+    $sqlThanhVien = "
+        SELECT
+            tg.id AS tham_gia_id,
+            tg.vai_tro,
+            tg.ngay_tham_gia,
+            tg.trang_thai,
+            nd.id AS nguoi_dung_id,
+            nd.ho_ten,
+            nd.ten_dang_nhap,
+            nd.email,
+            nd.so_dien_thoai
+        FROM tham_gia_clb tg
+
+        INNER JOIN nguoi_dung nd
+            ON tg.nguoi_dung_id = nd.id
+
+        WHERE tg.cau_lac_bo_id = :clb_id
+
+        ORDER BY
+            FIELD(
+                tg.vai_tro,
+                'quan_tri',
+                'chu_nhiem',
+                'pho_chu_nhiem',
+                'thanh_vien'
+            ),
+            nd.ho_ten ASC
+    ";
+
+    $stmtThanhVien = $pdo->prepare($sqlThanhVien);
+
+    $stmtThanhVien->execute([
+        'clb_id' => $clbId
+    ]);
+
+    $danhSachThanhVien = $stmtThanhVien->fetchAll();
+}
 
 ?>
 
-<main class="content">
+<?php require_once 'includes/header.php'; ?>
 
-    <div class="page-heading">
+<div class="app-layout">
 
-        <div>
+    <?php require_once 'includes/sidebar.php'; ?>
 
-            <h1>
-                Danh sách thành viên
-            </h1>
+    <main class="main-content">
 
-            <p>
-                CLB Tin học
-            </p>
+        <section class="page-header">
 
-        </div>
+            <div>
+                <h1>Quản lý thành viên</h1>
 
-        <button type="button">
-            + Thêm thành viên
-        </button>
+                <p>
+                    Quản lý thành viên của từng câu lạc bộ.
+                </p>
+            </div>
 
-    </div>
+        </section>
 
 
-    <section>
+        <?php if (!empty($_GET['success'])): ?>
 
-        <div class="filter-bar">
+            <div class="alert-success">
 
-            <input
-                type="search"
-                placeholder="Tìm theo tên, mã sinh viên..."
-            >
+                <?php if ($_GET['success'] === 'them'): ?>
+                    Thêm thành viên thành công.
 
-            <select>
+                <?php elseif ($_GET['success'] === 'sua'): ?>
+                    Cập nhật thành viên thành công.
 
-                <option>
-                    Tất cả vai trò
-                </option>
+                <?php elseif ($_GET['success'] === 'xoa'): ?>
+                    Thành viên đã rời câu lạc bộ.
+                <?php endif; ?>
 
-                <option>
-                    Chủ nhiệm
-                </option>
+            </div>
 
-                <option>
-                    Thành viên
-                </option>
+        <?php endif; ?>
 
-            </select>
 
-        </div>
+        <?php if (empty($danhSachClb)): ?>
 
+            <div class="empty-state">
 
-        <div class="table-wrapper">
+                <p>
+                    Bạn chưa quản lý câu lạc bộ nào.
+                </p>
 
-            <table>
+                <a
+                    href="them-clb.php"
+                    class="btn btn-primary"
+                >
+                    + Tạo câu lạc bộ
+                </a>
 
-                <caption>
-                    Danh sách thành viên CLB Tin học
-                </caption>
+            </div>
 
-                <thead>
+        <?php else: ?>
 
-                <tr>
 
-                    <th scope="col">
-                        STT
-                    </th>
+            <!-- CHỌN CLB -->
 
-                    <th scope="col">
-                        Họ tên
-                    </th>
+            <div class="card">
 
-                    <th scope="col">
-                        Mã SV
-                    </th>
+                <form
+                    method="GET"
+                    action="thanh-vien.php"
+                >
 
-                    <th scope="col">
-                        Vai trò
-                    </th>
+                    <div class="form-group">
 
-                    <th scope="col">
-                        Email
-                    </th>
+                        <label for="clb_id">
+                            Chọn câu lạc bộ
+                        </label>
 
-                    <th scope="col">
-                        Trạng thái
-                    </th>
+                        <select
+                            name="clb_id"
+                            id="clb_id"
+                            onchange="this.form.submit()"
+                        >
 
-                    <th scope="col">
-                        Thao tác
-                    </th>
+                            <?php foreach ($danhSachClb as $clb): ?>
 
-                </tr>
+                                <option
+                                    value="<?= $clb['id'] ?>"
+                                    <?= $clbId == $clb['id'] ? 'selected' : '' ?>
+                                >
+                                    <?= htmlspecialchars($clb['ten_clb']) ?>
+                                </option>
 
-                </thead>
+                            <?php endforeach; ?>
 
+                        </select>
 
-                <tbody>
+                    </div>
 
-                <tr>
+                </form>
 
-                    <td>1</td>
+            </div>
 
-                    <td>
-                        Nguyễn Văn A
-                    </td>
 
-                    <td>
-                        22123456
-                    </td>
+            <?php if ($clbHienTai): ?>
 
-                    <td>
-                        Chủ nhiệm
-                    </td>
+                <section class="content-section">
 
-                    <td>
-                        a@example.com
-                    </td>
+                    <div class="section-header">
 
-                    <td>
+                        <div>
 
-                        <span class="badge badge-green">
-                            Hoạt động
-                        </span>
+                            <h2>
+                                <?= htmlspecialchars($clbHienTai['ten_clb']) ?>
+                            </h2>
 
-                    </td>
+                            <p>
+                                Tổng số:
+                                <?= count($danhSachThanhVien) ?>
+                                thành viên
+                            </p>
 
-                    <td class="table-actions">
+                        </div>
 
-                        <button>
-                            Sửa
-                        </button>
 
-                        <button class="btn-danger">
-                            Xóa
-                        </button>
+                        <a
+                            href="them-thanh-vien.php?clb_id=<?= $clbId ?>"
+                            class="btn btn-primary"
+                        >
+                            + Thêm thành viên
+                        </a>
 
-                    </td>
+                    </div>
 
-                </tr>
 
+                    <?php if (!empty($danhSachThanhVien)): ?>
 
-                <tr>
+                        <div class="table-wrapper">
 
-                    <td>2</td>
+                            <table>
 
-                    <td>
-                        Trần Thị B
-                    </td>
+                                <thead>
 
-                    <td>
-                        22123457
-                    </td>
+                                    <tr>
 
-                    <td>
-                        Thành viên
-                    </td>
+                                        <th>Họ tên</th>
 
-                    <td>
-                        b@example.com
-                    </td>
+                                        <th>Tên đăng nhập</th>
 
-                    <td>
+                                        <th>Email</th>
 
-                        <span class="badge badge-green">
-                            Hoạt động
-                        </span>
+                                        <th>Vai trò</th>
 
-                    </td>
+                                        <th>Ngày tham gia</th>
 
-                    <td class="table-actions">
+                                        <th>Trạng thái</th>
 
-                        <button>
-                            Sửa
-                        </button>
+                                        <th>Thao tác</th>
 
-                        <button class="btn-danger">
-                            Xóa
-                        </button>
+                                    </tr>
 
-                    </td>
+                                </thead>
 
-                </tr>
 
-                </tbody>
+                                <tbody>
 
-            </table>
+                                    <?php foreach ($danhSachThanhVien as $tv): ?>
 
-        </div>
+                                        <tr>
 
-    </section>
+                                            <td>
+                                                <?= htmlspecialchars($tv['ho_ten']) ?>
+                                            </td>
 
-</main>
+                                            <td>
+                                                <?= htmlspecialchars($tv['ten_dang_nhap']) ?>
+                                            </td>
 
-<?php
-include 'includes/footer.php';
-?>
+                                            <td>
+                                                <?= htmlspecialchars($tv['email'] ?? '') ?>
+                                            </td>
+
+                                            <td>
+
+                                                <?php
+                                                switch ($tv['vai_tro']) {
+
+                                                    case 'quan_tri':
+                                                        echo 'Quản trị';
+                                                        break;
+
+                                                    case 'chu_nhiem':
+                                                        echo 'Chủ nhiệm';
+                                                        break;
+
+                                                    case 'pho_chu_nhiem':
+                                                        echo 'Phó chủ nhiệm';
+                                                        break;
+
+                                                    default:
+                                                        echo 'Thành viên';
+                                                        break;
+                                                }
+                                                ?>
+
+                                            </td>
+
+                                            <td>
+                                                <?= htmlspecialchars($tv['ngay_tham_gia']) ?>
+                                            </td>
+
+                                            <td>
+
+                                                <?php if ($tv['trang_thai'] === 'hoat_dong'): ?>
+
+                                                    <span class="badge badge-success">
+                                                        Hoạt động
+                                                    </span>
+
+                                                <?php elseif ($tv['trang_thai'] === 'tam_dung'): ?>
+
+                                                    <span class="badge badge-warning">
+                                                        Tạm dừng
+                                                    </span>
+
+                                                <?php else: ?>
+
+                                                    <span class="badge">
+                                                        Đã rời
+                                                    </span>
+
+                                                <?php endif; ?>
+
+                                            </td>
+
+                                            <td>
+
+                                                <a
+                                                    href="sua-thanh-vien.php?id=<?= $tv['tham_gia_id'] ?>&clb_id=<?= $clbId ?>"
+                                                    class="btn"
+                                                >
+                                                    Sửa
+                                                </a>
+
+
+                                                <?php if ($tv['nguoi_dung_id'] != $userId): ?>
+
+                                                    <form
+                                                        method="POST"
+                                                        action="xoa-thanh-vien.php"
+                                                        style="display:inline;"
+                                                        onsubmit="return confirm('Bạn có chắc muốn cho thành viên này rời câu lạc bộ không?');"
+                                                    >
+
+                                                        <input
+                                                            type="hidden"
+                                                            name="tham_gia_id"
+                                                            value="<?= $tv['tham_gia_id'] ?>"
+                                                        >
+
+                                                        <input
+                                                            type="hidden"
+                                                            name="clb_id"
+                                                            value="<?= $clbId ?>"
+                                                        >
+
+                                                        <button
+                                                            type="submit"
+                                                            class="btn"
+                                                        >
+                                                            Xóa
+                                                        </button>
+
+                                                    </form>
+
+                                                <?php endif; ?>
+
+                                            </td>
+
+                                        </tr>
+
+                                    <?php endforeach; ?>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    <?php else: ?>
+
+                        <div class="empty-state">
+
+                            <p>
+                                Câu lạc bộ chưa có thành viên.
+                            </p>
+
+                        </div>
+
+                    <?php endif; ?>
+
+                </section>
+
+            <?php endif; ?>
+
+        <?php endif; ?>
+
+    </main>
+
+</div>
+
+<?php require_once 'includes/footer.php'; ?>

@@ -1,21 +1,21 @@
 <?php
-if (!isset($pageTitle)) {
-    $pageTitle = 'ClubManager';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 
-if (!isset($userName)) {
-    $userName = 'Nguyễn Văn A';
-}
+$pageTitle = $pageTitle ?? 'ClubManager';
 
-if (!isset($userRole)) {
-    $userRole = 'Quản trị viên';
-}
+$userName = $_SESSION['ho_ten'] ?? 'Người dùng';
+$userEmail = $_SESSION['email'] ?? '';
+
 ?>
 
 <!DOCTYPE html>
 <html lang="vi">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -23,41 +23,60 @@ if (!isset($userRole)) {
         content="width=device-width, initial-scale=1.0"
     >
 
-    <meta
-        name="description"
-        content="Hệ thống quản lý câu lạc bộ ClubManager."
-    >
-
     <title>
-        <?php echo htmlspecialchars($pageTitle); ?> | ClubManager
+        <?= htmlspecialchars($pageTitle) ?>
     </title>
 
-    <link rel="stylesheet" href="css/style.css">
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
 </head>
 
 <body>
 
 <header class="topbar">
 
-    <div class="logo">
-        ClubManager
+    <div class="topbar-left">
+
+        <h2>
+            ClubManager
+        </h2>
+
     </div>
 
-    <div class="topbar-search">
-        <input
-            type="search"
-            placeholder="Tìm kiếm..."
-        >
-    </div>
 
-    <div class="account">
-        <strong>
-            <?php echo htmlspecialchars($userName); ?>
-        </strong>
+    <div class="topbar-right">
 
-        <span>
-            <?php echo htmlspecialchars($userRole); ?>
-        </span>
+        <div class="user-info">
+
+            <strong>
+                <?= htmlspecialchars($userName) ?>
+            </strong>
+
+            <?php if ($userEmail !== ''): ?>
+
+                <span>
+                    <?= htmlspecialchars($userEmail) ?>
+                </span>
+
+            <?php endif; ?>
+
+        </div>
+
+
+        <?php if (isset($_SESSION['user_id'])): ?>
+
+            <a
+                href="dang-xuat.php"
+                class="btn btn-secondary"
+            >
+                Đăng xuất
+            </a>
+
+        <?php endif; ?>
+
     </div>
 
 </header>

@@ -1,145 +1,194 @@
 <?php
 
+require_once 'includes/quan-ly-auth.php';
+require_once 'config/database.php';
+
+$userId = $_SESSION['user_id'];
+
 $pageTitle = 'Quản lý câu lạc bộ';
+$activePage = 'clb-quan-tri';
 
-$userName = 'Nguyễn Văn A';
-$userRole = 'Quản trị viên';
 
-$activePage = 'club-admin';
+/* Lấy các CLB do người đang đăng nhập tạo */
+$sql = "
+    SELECT *
+    FROM cau_lac_bo
+    WHERE nguoi_tao_id = :user_id
+    ORDER BY id DESC
+";
 
-include 'includes/header.php';
-include 'includes/sidebar.php';
+$stmt = $pdo->prepare($sql);
+
+$stmt->execute([
+    'user_id' => $userId
+]);
+
+$danhSachClb = $stmt->fetchAll();
 
 ?>
 
-<main class="content">
+<?php require_once 'includes/header.php'; ?>
 
-    <div class="page-heading">
+<div class="app-layout">
 
-        <div>
+    <?php require_once 'includes/sidebar.php'; ?>
 
-            <h1>
-                Danh sách câu lạc bộ
-            </h1>
+    <main class="main-content">
 
-            <p>
-                Bạn đang quản lý 3 câu lạc bộ.
-            </p>
+        <section class="page-header">
 
-        </div>
+            <div>
+                <h1>Quản lý câu lạc bộ</h1>
 
-        <button type="button">
-            + Thêm câu lạc bộ
-        </button>
+                <p>
+                    Danh sách các câu lạc bộ do bạn tạo và quản lý.
+                </p>
+            </div>
 
-    </div>
-
-
-    <section>
-
-        <div class="filter-bar">
-
-            <input
-                type="search"
-                placeholder="Tìm kiếm câu lạc bộ..."
+            <a
+                href="them-clb.php"
+                class="btn btn-primary"
             >
+                + Thêm câu lạc bộ
+            </a>
 
-            <select>
-
-                <option>
-                    Tất cả
-                </option>
-
-                <option>
-                    Đang hoạt động
-                </option>
-
-                <option>
-                    Tạm dừng
-                </option>
-
-            </select>
-
-        </div>
+        </section>
 
 
-        <div class="club-grid">
+        <?php if (!empty($_GET['success'])): ?>
 
-            <article class="club-card">
+            <div class="alert-success">
 
-                <div class="club-image">
-                    Ảnh CLB
-                </div>
+                <?php if ($_GET['success'] === 'them'): ?>
+                    Thêm câu lạc bộ thành công.
+                <?php elseif ($_GET['success'] === 'sua'): ?>
+                    Cập nhật câu lạc bộ thành công.
+                <?php elseif ($_GET['success'] === 'xoa'): ?>
+                    Xóa câu lạc bộ thành công.
+                <?php endif; ?>
 
-                <h2>CLB Tin học</h2>
+            </div>
+
+        <?php endif; ?>
+
+
+        <?php if (!empty($danhSachClb)): ?>
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên câu lạc bộ</th>
+                            <th>Lĩnh vực</th>
+                            <th>Ngày thành lập</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <?php foreach ($danhSachClb as $clb): ?>
+
+                            <tr>
+
+                                <td>
+                                    <?= $clb['id'] ?>
+                                </td>
+
+                                <td>
+                                    <?= htmlspecialchars($clb['ten_clb']) ?>
+                                </td>
+
+                                <td>
+                                    <?= htmlspecialchars($clb['linh_vuc']) ?>
+                                </td>
+
+                                <td>
+                                    <?= htmlspecialchars($clb['ngay_thanh_lap']) ?>
+                                </td>
+
+                                <td>
+
+                                    <?php if ($clb['trang_thai'] === 'hoat_dong'): ?>
+
+                                        <span class="badge badge-success">
+                                            Hoạt động
+                                        </span>
+
+                                    <?php else: ?>
+
+                                        <span class="badge badge-warning">
+                                            Tạm dừng
+                                        </span>
+
+                                    <?php endif; ?>
+
+                                </td>
+
+                                <td>
+
+                                    <a
+                                        href="chi-tiet-clb.php?id=<?= $clb['id'] ?>"
+                                        class="btn"
+                                    >
+                                        Xem
+                                    </a>
+
+                                    <a
+                                        href="sua-clb.php?id=<?= $clb['id'] ?>"
+                                        class="btn"
+                                    >
+                                        Sửa
+                                    </a>
+
+                                    <a
+                                        href="xoa-clb.php?id=<?= $clb['id'] ?>"
+                                        class="btn"
+                                        onclick="return confirm('Bạn có chắc muốn xóa câu lạc bộ này không?');"
+                                    >
+                                        Xóa
+                                    </a>
+
+                                </td>
+
+                            </tr>
+
+                        <?php endforeach; ?>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        <?php else: ?>
+
+            <div class="empty-state">
 
                 <p>
-                    Thành viên: 50
+                    Bạn chưa tạo câu lạc bộ nào.
                 </p>
 
                 <a
-                    class="btn-secondary"
-                    href="dashboard.php"
+                    href="them-clb.php"
+                    class="btn btn-primary"
                 >
-                    Quản lý câu lạc bộ
+                    Tạo câu lạc bộ đầu tiên
                 </a>
 
-            </article>
+            </div>
 
+        <?php endif; ?>
 
-            <article class="club-card">
+    </main>
 
-                <div class="club-image">
-                    Ảnh CLB
-                </div>
+</div>
 
-                <h2>
-                    CLB Tiếng Anh
-                </h2>
-
-                <p>
-                    Thành viên: 35
-                </p>
-
-                <a
-                    class="btn-secondary"
-                    href="dashboard.php"
-                >
-                    Quản lý câu lạc bộ
-                </a>
-
-            </article>
-
-
-            <article class="club-card">
-
-                <div class="club-image">
-                    Ảnh CLB
-                </div>
-
-                <h2>
-                    CLB Tình nguyện
-                </h2>
-
-                <p>
-                    Thành viên: 40
-                </p>
-
-                <a
-                    class="btn-secondary"
-                    href="dashboard.php"
-                >
-                    Quản lý câu lạc bộ
-                </a>
-
-            </article>
-
-        </div>
-
-    </section>
-
-</main>
-
-<?php
-include 'includes/footer.php';
-?>
+<?php require_once 'includes/footer.php'; ?>
