@@ -1,4 +1,3 @@
-
 <?php
 /* Kiểm tra dữ liệu giao dịch thu chi */
 

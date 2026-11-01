@@ -1,662 +1,394 @@
 <?php
+require_once __DIR__ . '/includes/quan-ly-auth.php';
+require_once __DIR__ . '/config/database.php';
 
-require_once 'includes/quan-ly-auth.php';
-require_once 'config/database.php';
+$userId = (int) $_SESSION['user_id'];
 
-$userId = $_SESSION['user_id'];
-
-$pageTitle = 'Thống kê';
+$pageTitle = 'Thống kê và báo cáo';
 $activePage = 'thong-ke';
 
+function e($value) {
+    return htmlspecialchars((string)($value ?? ''), ENT_QUOTES, 'UTF-8');
+}
 
-/* =====================================================
-   1. CLB DO USER QUẢN LÝ
-   ===================================================== */
+function tien($value) {
+    return number_format((float)$value, 0, ',', '.') . ' đ';
+}
 
-$sqlClb = "
+/* Lấy các CLB người dùng quản lý */
+$stmtClb = $pdo->prepare("
     SELECT id, ten_clb
     FROM cau_lac_bo
     WHERE nguoi_tao_id = :user_id
     ORDER BY ten_clb ASC
-";
+");
 
-$stmtClb = $pdo->prepare($sqlClb);
-
-$stmtClb->execute([
-    'user_id' => $userId
-]);
-
+$stmtClb->execute(['user_id' => $userId]);
 $danhSachClb = $stmtClb->fetchAll();
-
 
 $clbId = (int) ($_GET['clb_id'] ?? 0);
 
-if ($clbId <= 0 && !empty($danhSachClb)) {
+if ($clbId <= 0 && $danhSachClb) {
     $clbId = (int) $danhSachClb[0]['id'];
 }
-
 
 $clbHienTai = null;
 
 foreach ($danhSachClb as $clb) {
-
-    if ((int) $clb['id'] === $clbId) {
-
+    if ((int)$clb['id'] === $clbId) {
         $clbHienTai = $clb;
         break;
     }
 }
 
-
 if ($clbId > 0 && !$clbHienTai) {
-
-    header('Location: thong-ke.php');
-    exit;
+    http_response_code(403);
+    exit('Bạn không có quyền xem thống kê câu lạc bộ này.');
 }
 
-
-/* =====================================================
-   GIÁ TRỊ MẶC ĐỊNH
-   ===================================================== */
-
+/* Giá trị ban đầu */
 $tongThanhVien = 0;
 $tongSuKien = 0;
-
 $tongThu = 0;
 $tongChi = 0;
 $soDu = 0;
-
 $tongLuotDiemDanh = 0;
 $coMat = 0;
 $vang = 0;
 $tyLeCoMat = 0;
-
 $thongKeThang = [];
 
+if ($clbHienTai) {
 
-/* =====================================================
-   2. THỐNG KÊ THÀNH VIÊN
-   ===================================================== */
-
-if ($clbId > 0) {
-
-    $sqlThanhVien = "
+    /* Thống kê thành viên */
+    $stmt = $pdo->prepare("
         SELECT COUNT(*)
-
         FROM tham_gia_clb
-
         WHERE cau_lac_bo_id = :clb_id
-
           AND trang_thai = 'hoat_dong'
-    ";
+    ");
+    $stmt->execute(['clb_id' => $clbId]);
+    $tongThanhVien = (int)$stmt->fetchColumn();
 
-    $stmtThanhVien = $pdo->prepare($sqlThanhVien);
-
-    $stmtThanhVien->execute([
-        'clb_id' => $clbId
-    ]);
-
-    $tongThanhVien = (int) $stmtThanhVien->fetchColumn();
-
-
-    /* =================================================
-       3. TỔNG SỰ KIỆN
-       ================================================= */
-
-    $sqlSuKien = "
+    /* Thống kê sự kiện */
+    $stmt = $pdo->prepare("
         SELECT COUNT(*)
-
         FROM su_kien
-
         WHERE cau_lac_bo_id = :clb_id
-    ";
+    ");
+    $stmt->execute(['clb_id' => $clbId]);
+    $tongSuKien = (int)$stmt->fetchColumn();
 
-    $stmtSuKien = $pdo->prepare($sqlSuKien);
-
-    $stmtSuKien->execute([
-        'clb_id' => $clbId
-    ]);
-
-    $tongSuKien = (int) $stmtSuKien->fetchColumn();
-
-
-    /* =================================================
-       4. THU - CHI
-       ================================================= */
-
-    $sqlTaiChinh = "
+    /* Thống kê tài chính */
+    $stmt = $pdo->prepare("
         SELECT
+            COALESCE(SUM(
+                CASE WHEN loai = 'thu'
+                    THEN so_tien ELSE 0 END
+            ), 0) AS tong_thu,
 
-            COALESCE(
-                SUM(
-                    CASE
-                        WHEN loai = 'thu'
-                        THEN so_tien
-                        ELSE 0
-                    END
-                ),
-                0
-            ) AS tong_thu,
-
-            COALESCE(
-                SUM(
-                    CASE
-                        WHEN loai = 'chi'
-                        THEN so_tien
-                        ELSE 0
-                    END
-                ),
-                0
-            ) AS tong_chi
+            COALESCE(SUM(
+                CASE WHEN loai = 'chi'
+                    THEN so_tien ELSE 0 END
+            ), 0) AS tong_chi
 
         FROM thu_chi
-
         WHERE cau_lac_bo_id = :clb_id
-    ";
+    ");
+    $stmt->execute(['clb_id' => $clbId]);
+    $taiChinh = $stmt->fetch();
 
-    $stmtTaiChinh = $pdo->prepare($sqlTaiChinh);
-
-    $stmtTaiChinh->execute([
-        'clb_id' => $clbId
-    ]);
-
-    $taiChinh = $stmtTaiChinh->fetch();
-
-    $tongThu = (float) $taiChinh['tong_thu'];
-    $tongChi = (float) $taiChinh['tong_chi'];
-
+    $tongThu = (float)$taiChinh['tong_thu'];
+    $tongChi = (float)$taiChinh['tong_chi'];
     $soDu = $tongThu - $tongChi;
 
-
-    /* =================================================
-       5. ĐIỂM DANH
-       ================================================= */
-
-    $sqlDiemDanh = "
+    /* Thống kê điểm danh */
+    $stmt = $pdo->prepare("
         SELECT
-
             COUNT(dd.id) AS tong,
-
-            SUM(
-                CASE
-                    WHEN dd.trang_thai = 'co_mat'
-                    THEN 1
-                    ELSE 0
-                END
-            ) AS co_mat,
-
-            SUM(
-                CASE
-                    WHEN dd.trang_thai = 'vang'
-                    THEN 1
-                    ELSE 0
-                END
-            ) AS vang
+            COALESCE(SUM(
+                CASE WHEN dd.trang_thai = 'co_mat'
+                    THEN 1 ELSE 0 END
+            ), 0) AS co_mat,
+            COALESCE(SUM(
+                CASE WHEN dd.trang_thai = 'vang'
+                    THEN 1 ELSE 0 END
+            ), 0) AS vang
 
         FROM diem_danh dd
-
         INNER JOIN su_kien sk
-            ON dd.su_kien_id = sk.id
+            ON sk.id = dd.su_kien_id
 
         WHERE sk.cau_lac_bo_id = :clb_id
-    ";
+    ");
+    $stmt->execute(['clb_id' => $clbId]);
+    $diemDanh = $stmt->fetch();
 
-    $stmtDiemDanh = $pdo->prepare($sqlDiemDanh);
-
-    $stmtDiemDanh->execute([
-        'clb_id' => $clbId
-    ]);
-
-    $diemDanh = $stmtDiemDanh->fetch();
-
-
-    $tongLuotDiemDanh = (int) ($diemDanh['tong'] ?? 0);
-
-    $coMat = (int) ($diemDanh['co_mat'] ?? 0);
-
-    $vang = (int) ($diemDanh['vang'] ?? 0);
-
+    $tongLuotDiemDanh = (int)$diemDanh['tong'];
+    $coMat = (int)$diemDanh['co_mat'];
+    $vang = (int)$diemDanh['vang'];
 
     if ($tongLuotDiemDanh > 0) {
-
         $tyLeCoMat = round(
-            ($coMat / $tongLuotDiemDanh) * 100,
+            $coMat / $tongLuotDiemDanh * 100,
             1
         );
     }
 
-
-    /* =================================================
-       6. THỐNG KÊ THU CHI THEO THÁNG
-       ================================================= */
-
-    $sqlThang = "
+    /* Thống kê thu chi theo tháng */
+    $stmt = $pdo->prepare("
         SELECT
+            DATE_FORMAT(ngay_giao_dich, '%Y-%m') AS thang,
 
-            DATE_FORMAT(
-                ngay_giao_dich,
-                '%Y-%m'
-            ) AS thang,
+            COALESCE(SUM(
+                CASE WHEN loai = 'thu'
+                    THEN so_tien ELSE 0 END
+            ), 0) AS tong_thu,
 
-            SUM(
-                CASE
-                    WHEN loai = 'thu'
-                    THEN so_tien
-                    ELSE 0
-                END
-            ) AS tong_thu,
-
-            SUM(
-                CASE
-                    WHEN loai = 'chi'
-                    THEN so_tien
-                    ELSE 0
-                END
-            ) AS tong_chi
+            COALESCE(SUM(
+                CASE WHEN loai = 'chi'
+                    THEN so_tien ELSE 0 END
+            ), 0) AS tong_chi
 
         FROM thu_chi
-
         WHERE cau_lac_bo_id = :clb_id
 
-        GROUP BY
-            DATE_FORMAT(
-                ngay_giao_dich,
-                '%Y-%m'
-            )
-
+        GROUP BY DATE_FORMAT(ngay_giao_dich, '%Y-%m')
         ORDER BY thang DESC
-    ";
+    ");
 
-    $stmtThang = $pdo->prepare($sqlThang);
-
-    $stmtThang->execute([
-        'clb_id' => $clbId
-    ]);
-
-    $thongKeThang = $stmtThang->fetchAll();
+    $stmt->execute(['clb_id' => $clbId]);
+    $thongKeThang = $stmt->fetchAll();
 }
 
+require_once __DIR__ . '/includes/header.php';
 ?>
 
-<?php require_once 'includes/header.php'; ?>
-
 <div class="app-layout">
-
-    <?php require_once 'includes/sidebar.php'; ?>
+    <?php require_once __DIR__ . '/includes/sidebar.php'; ?>
 
     <main class="main-content">
 
         <section class="page-header">
-
             <div>
-
-                <h1>Thống kê</h1>
-
+                <h1>Thống kê và báo cáo</h1>
                 <p>
-                    Tổng hợp hoạt động của câu lạc bộ.
+                    Theo dõi tình hình hoạt động và tài chính
+                    của câu lạc bộ.
                 </p>
-
             </div>
 
+            <?php if ($clbHienTai): ?>
+                <a
+                    class="btn btn-primary"
+                    href="xuat-bao-cao.php?clb_id=<?= $clbId ?>"
+                >
+                    Xuất báo cáo Excel (CSV)
+                </a>
+            <?php endif; ?>
         </section>
 
-
-        <?php if (empty($danhSachClb)): ?>
+        <?php if (!$danhSachClb): ?>
 
             <div class="empty-state">
-
-                <p>
-                    Bạn chưa quản lý câu lạc bộ nào.
-                </p>
-
+                <p>Bạn chưa quản lý câu lạc bộ nào.</p>
+                <a href="them-clb.php" class="btn btn-primary">
+                    + Tạo câu lạc bộ
+                </a>
             </div>
 
         <?php else: ?>
 
+            <!-- CHỌN CLB -->
             <div class="card">
-
-                <form method="GET">
-
+                <form method="GET" action="thong-ke.php">
                     <div class="form-group">
-
-                        <label for="clb_id">
-                            Chọn câu lạc bộ
-                        </label>
-
-                        <select
-                            name="clb_id"
-                            id="clb_id"
-                            onchange="this.form.submit()"
-                        >
-
+                        <label for="clb_id">Chọn câu lạc bộ</label>
+                        <select name="clb_id" id="clb_id">
                             <?php foreach ($danhSachClb as $clb): ?>
-
                                 <option
-                                    value="<?= $clb['id'] ?>"
-                                    <?= $clbId == $clb['id'] ? 'selected' : '' ?>
+                                    value="<?= (int)$clb['id'] ?>"
+                                    <?= $clbId === (int)$clb['id']
+                                        ? 'selected' : '' ?>
                                 >
-                                    <?= htmlspecialchars($clb['ten_clb']) ?>
+                                    <?= e($clb['ten_clb']) ?>
                                 </option>
-
                             <?php endforeach; ?>
-
                         </select>
-
                     </div>
 
+                    <button type="submit" class="btn btn-primary">
+                        Xem thống kê
+                    </button>
                 </form>
-
             </div>
 
+            <?php if ($clbHienTai): ?>
 
-            <section class="content-section">
+                <!-- TỔNG QUAN -->
+                <section class="content-section">
 
-                <div class="section-header">
-
-                    <div>
-
-                        <h2>
-                            <?= htmlspecialchars($clbHienTai['ten_clb']) ?>
-                        </h2>
-
-                        <p>
-                            Tổng quan câu lạc bộ
-                        </p>
-
+                    <div class="section-header">
+                        <div>
+                            <h2><?= e($clbHienTai['ten_clb']) ?></h2>
+                            <p>Thống kê toàn bộ dữ liệu hiện có</p>
+                        </div>
                     </div>
 
-                </div>
+                    <div class="dashboard-cards">
+                        <div class="stat-card">
+                            <h3><?= $tongThanhVien ?></h3>
+                            <p>Thành viên hoạt động</p>
+                        </div>
 
+                        <div class="stat-card">
+                            <h3><?= $tongSuKien ?></h3>
+                            <p>Tổng sự kiện</p>
+                        </div>
 
-                <div class="dashboard-cards">
+                        <div class="stat-card">
+                            <h3><?= $tyLeCoMat ?>%</h3>
+                            <p>Tỷ lệ có mặt trong lượt đã điểm danh</p>
+                        </div>
 
-                    <div class="stat-card">
-
-                        <h3>
-                            <?= $tongThanhVien ?>
-                        </h3>
-
-                        <p>Thành viên hoạt động</p>
-
+                        <div class="stat-card">
+                            <h3><?= tien($soDu) ?></h3>
+                            <p>Số dư quỹ</p>
+                        </div>
                     </div>
 
+                </section>
 
-                    <div class="stat-card">
+                <!-- TÀI CHÍNH -->
+                <section class="content-section">
 
-                        <h3>
-                            <?= $tongSuKien ?>
-                        </h3>
-
-                        <p>Sự kiện</p>
-
+                    <div class="section-header">
+                        <h2>Thống kê tài chính</h2>
                     </div>
 
+                    <div class="dashboard-cards">
+                        <div class="stat-card">
+                            <h3><?= tien($tongThu) ?></h3>
+                            <p>Tổng thu</p>
+                        </div>
 
-                    <div class="stat-card">
+                        <div class="stat-card">
+                            <h3><?= tien($tongChi) ?></h3>
+                            <p>Tổng chi</p>
+                        </div>
 
-                        <h3>
-                            <?= $tyLeCoMat ?>%
-                        </h3>
+                        <div class="stat-card">
+                            <h3><?= tien($soDu) ?></h3>
+                            <p>Số dư còn lại</p>
+                        </div>
+                    </div>
+                </section>
 
-                        <p>Tỷ lệ có mặt</p>
+                <!-- ĐIỂM DANH -->
+                <section class="content-section">
 
+                    <div class="section-header">
+                        <h2>Thống kê điểm danh</h2>
                     </div>
 
+                    <div class="dashboard-cards">
+                        <div class="stat-card">
+                            <h3><?= $tongLuotDiemDanh ?></h3>
+                            <p>Tổng lượt đã điểm danh</p>
+                        </div>
 
-                    <div class="stat-card">
+                        <div class="stat-card">
+                            <h3><?= $coMat ?></h3>
+                            <p>Lượt có mặt</p>
+                        </div>
 
-                        <h3>
-                            <?= number_format(
-                                $soDu,
-                                0,
-                                ',',
-                                '.'
-                            ) ?> đ
-                        </h3>
-
-                        <p>Số dư quỹ</p>
-
+                        <div class="stat-card">
+                            <h3><?= $vang ?></h3>
+                            <p>Lượt vắng</p>
+                        </div>
                     </div>
 
-                </div>
+                    <p style="color:#6d7f79;">
+                        Tỷ lệ có mặt được tính trên các lượt đã
+                        được điểm danh; không bao gồm những người
+                        chưa được ghi nhận trạng thái.
+                    </p>
+                </section>
 
-            </section>
+                <!-- THỐNG KÊ THEO THÁNG -->
+                <section class="content-section">
 
-
-            <!-- TÀI CHÍNH -->
-
-            <section class="content-section">
-
-                <div class="section-header">
-
-                    <div>
-
-                        <h2>
-                            Thống kê tài chính
-                        </h2>
-
+                    <div class="section-header">
+                        <h2>Thu – Chi theo tháng</h2>
                     </div>
 
-                </div>
-
-
-                <div class="dashboard-cards">
-
-                    <div class="stat-card">
-
-                        <h3>
-                            <?= number_format(
-                                $tongThu,
-                                0,
-                                ',',
-                                '.'
-                            ) ?> đ
-                        </h3>
-
-                        <p>Tổng thu</p>
-
-                    </div>
-
-
-                    <div class="stat-card">
-
-                        <h3>
-                            <?= number_format(
-                                $tongChi,
-                                0,
-                                ',',
-                                '.'
-                            ) ?> đ
-                        </h3>
-
-                        <p>Tổng chi</p>
-
-                    </div>
-
-
-                    <div class="stat-card">
-
-                        <h3>
-                            <?= number_format(
-                                $soDu,
-                                0,
-                                ',',
-                                '.'
-                            ) ?> đ
-                        </h3>
-
-                        <p>Còn lại</p>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <!-- ĐIỂM DANH -->
-
-            <section class="content-section">
-
-                <div class="section-header">
-
-                    <h2>
-                        Thống kê điểm danh
-                    </h2>
-
-                </div>
-
-
-                <div class="dashboard-cards">
-
-                    <div class="stat-card">
-
-                        <h3>
-                            <?= $tongLuotDiemDanh ?>
-                        </h3>
-
-                        <p>Tổng lượt điểm danh</p>
-
-                    </div>
-
-
-                    <div class="stat-card">
-
-                        <h3>
-                            <?= $coMat ?>
-                        </h3>
-
-                        <p>Có mặt</p>
-
-                    </div>
-
-
-                    <div class="stat-card">
-
-                        <h3>
-                            <?= $vang ?>
-                        </h3>
-
-                        <p>Vắng</p>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <!-- THU CHI THEO THÁNG -->
-
-            <section class="content-section">
-
-                <div class="section-header">
-
-                    <h2>
-                        Thu - Chi theo tháng
-                    </h2>
-
-                </div>
-
-
-                <?php if (!empty($thongKeThang)): ?>
-
-                    <div class="table-wrapper">
-
-                        <table>
-
-                            <thead>
-
-                                <tr>
-
-                                    <th>Tháng</th>
-
-                                    <th>Tổng thu</th>
-
-                                    <th>Tổng chi</th>
-
-                                    <th>Số dư tháng</th>
-
-                                </tr>
-
-                            </thead>
-
-
-                            <tbody>
-
-                                <?php foreach ($thongKeThang as $thang): ?>
-
-                                    <?php
-                                    $duThang =
-                                        $thang['tong_thu']
-                                        -
-                                        $thang['tong_chi'];
-                                    ?>
-
+                    <?php if ($thongKeThang): ?>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
                                     <tr>
-
-                                        <td>
-                                            <?= htmlspecialchars($thang['thang']) ?>
-                                        </td>
-
-
-                                        <td>
-                                            <?= number_format(
-                                                $thang['tong_thu'],
-                                                0,
-                                                ',',
-                                                '.'
-                                            ) ?> đ
-                                        </td>
-
-
-                                        <td>
-                                            <?= number_format(
-                                                $thang['tong_chi'],
-                                                0,
-                                                ',',
-                                                '.'
-                                            ) ?> đ
-                                        </td>
-
-
-                                        <td>
-                                            <?= number_format(
-                                                $duThang,
-                                                0,
-                                                ',',
-                                                '.'
-                                            ) ?> đ
-                                        </td>
-
+                                        <th>Tháng</th>
+                                        <th>Tổng thu</th>
+                                        <th>Tổng chi</th>
+                                        <th>Chênh lệch tháng</th>
                                     </tr>
+                                </thead>
 
-                                <?php endforeach; ?>
+                                <tbody>
+                                    <?php foreach ($thongKeThang as $thang): ?>
+                                        <?php
+                                        $duThang =
+                                            (float)$thang['tong_thu']
+                                            - (float)$thang['tong_chi'];
+                                        ?>
 
-                            </tbody>
+                                        <tr>
+                                            <td><?= e($thang['thang']) ?></td>
+                                            <td>
+                                                <?= tien($thang['tong_thu']) ?>
+                                            </td>
+                                            <td>
+                                                <?= tien($thang['tong_chi']) ?>
+                                            </td>
+                                            <td>
+                                                <?= tien($duThang) ?>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php else: ?>
+                        <div class="empty-state">
+                            <p>Chưa có giao dịch để thống kê.</p>
+                        </div>
+                    <?php endif; ?>
 
-                        </table>
+                </section>
 
-                    </div>
-
-                <?php else: ?>
-
-                    <div class="empty-state">
-
+                <section class="content-section">
+                    <div class="card">
+                        <h2>Xuất báo cáo</h2>
                         <p>
-                            Chưa có dữ liệu tài chính để thống kê.
+                            Báo cáo CSV gồm thông tin tổng quan,
+                            kết quả điểm danh, thu chi theo tháng
+                            và danh sách các giao dịch.
                         </p>
 
+                        <a
+                            href="xuat-bao-cao.php?clb_id=<?= $clbId ?>"
+                            class="btn btn-primary"
+                        >
+                            Tải báo cáo CSV
+                        </a>
                     </div>
+                </section>
 
-                <?php endif; ?>
-
-            </section>
+            <?php endif; ?>
 
         <?php endif; ?>
 
     </main>
-
 </div>
 
-<?php require_once 'includes/footer.php'; ?>
+<?php require_once __DIR__ . '/includes/footer.php'; ?>

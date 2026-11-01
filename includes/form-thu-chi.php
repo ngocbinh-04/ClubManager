@@ -1,4 +1,3 @@
-
 <?php
 /* Sử dụng từ them-thu-chi.php hoặc sua-thu-chi.php */
 ?>
