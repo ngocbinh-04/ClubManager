@@ -1,15 +1,28 @@
+
 <?php
+require_once __DIR__ . '/includes/quan-ly-auth.php';
+require_once __DIR__ . '/config/database.php';
 
-require_once 'includes/quan-ly-auth.php';
-require_once 'config/database.php';
-
-$userId = $_SESSION['user_id'];
+$userId = (int) $_SESSION['user_id'];
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: diem-danh.php');
-    exit;
+    http_response_code(405);
+    exit('Phương thức không hợp lệ.');
 }
 
+/* Kiểm tra CSRF */
+$sessionToken = $_SESSION['csrf_token'] ?? '';
+$postToken = $_POST['csrf_token'] ?? '';
+
+if (
+    !is_string($sessionToken) ||
+    !is_string($postToken) ||
+    $sessionToken === '' ||
+    !hash_equals($sessionToken, $postToken)
+) {
+    http_response_code(403);
+    exit('Phiên biểu mẫu không hợp lệ. Hãy tải lại trang.');
+}
 
 $clbId = (int) ($_POST['clb_id'] ?? 0);
 $suKienId = (int) ($_POST['su_kien_id'] ?? 0);
@@ -17,19 +30,24 @@ $suKienId = (int) ($_POST['su_kien_id'] ?? 0);
 $trangThai = $_POST['trang_thai'] ?? [];
 $ghiChu = $_POST['ghi_chu'] ?? [];
 
+if (
+    $clbId <= 0 ||
+    $suKienId <= 0 ||
+    !is_array($trangThai) ||
+    !is_array($ghiChu)
+) {
+    http_response_code(400);
+    exit('Dữ liệu điểm danh không hợp lệ.');
+}
 
-/* =====================================================
-   KIỂM TRA CLB THUỘC USER
-   ===================================================== */
-
-$sqlClb = "
+/* Kiểm tra người đăng nhập sở hữu CLB */
+$stmtClb = $pdo->prepare("
     SELECT id
     FROM cau_lac_bo
     WHERE id = :clb_id
       AND nguoi_tao_id = :user_id
-";
-
-$stmtClb = $pdo->prepare($sqlClb);
+    LIMIT 1
+");
 
 $stmtClb->execute([
     'clb_id' => $clbId,
@@ -37,23 +55,18 @@ $stmtClb->execute([
 ]);
 
 if (!$stmtClb->fetch()) {
-    header('Location: diem-danh.php');
-    exit;
+    http_response_code(403);
+    exit('Bạn không có quyền điểm danh câu lạc bộ này.');
 }
 
-
-/* =====================================================
-   KIỂM TRA SỰ KIỆN
-   ===================================================== */
-
-$sqlSuKien = "
+/* Kiểm tra sự kiện thuộc đúng CLB */
+$stmtSuKien = $pdo->prepare("
     SELECT id
     FROM su_kien
     WHERE id = :su_kien_id
       AND cau_lac_bo_id = :clb_id
-";
-
-$stmtSuKien = $pdo->prepare($sqlSuKien);
+    LIMIT 1
+");
 
 $stmtSuKien->execute([
     'su_kien_id' => $suKienId,
@@ -61,21 +74,29 @@ $stmtSuKien->execute([
 ]);
 
 if (!$stmtSuKien->fetch()) {
-
-    header(
-        'Location: diem-danh.php?clb_id='
-        . $clbId
-    );
-
-    exit;
+    http_response_code(400);
+    exit('Sự kiện không hợp lệ.');
 }
 
+/* Lấy danh sách người được phép điểm danh */
+$stmtThanhVien = $pdo->prepare("
+    SELECT nguoi_dung_id
+    FROM tham_gia_clb
+    WHERE cau_lac_bo_id = :clb_id
+      AND trang_thai = 'hoat_dong'
+");
 
-/* =====================================================
-   LƯU TỪNG THÀNH VIÊN
-   ===================================================== */
+$stmtThanhVien->execute([
+    'clb_id' => $clbId
+]);
 
-$sqlLuu = "
+$thanhVienHopLe = array_fill_keys(
+    array_map('intval', $stmtThanhVien->fetchAll(PDO::FETCH_COLUMN)),
+    true
+);
+
+/* Lệnh thêm hoặc cập nhật điểm danh */
+$stmtLuu = $pdo->prepare("
     INSERT INTO diem_danh
     (
         su_kien_id,
@@ -83,7 +104,6 @@ $sqlLuu = "
         trang_thai,
         ghi_chu
     )
-
     VALUES
     (
         :su_kien_id,
@@ -91,62 +111,96 @@ $sqlLuu = "
         :trang_thai,
         :ghi_chu
     )
-
     ON DUPLICATE KEY UPDATE
-
         trang_thai = VALUES(trang_thai),
         ghi_chu = VALUES(ghi_chu)
-";
+");
 
-$stmtLuu = $pdo->prepare($sqlLuu);
+try {
+    $pdo->beginTransaction();
 
+    foreach ($trangThai as $id => $tt) {
+        if (!ctype_digit((string)$id) || (int)$id <= 0) {
+            throw new RuntimeException(
+                'Mã thành viên không hợp lệ.'
+            );
+        }
 
-foreach ($trangThai as $nguoiDungId => $tt) {
+        $nguoiDungId = (int) $id;
 
-    $nguoiDungId = (int) $nguoiDungId;
+        if (!isset($thanhVienHopLe[$nguoiDungId])) {
+            throw new RuntimeException(
+                'Có thành viên không thuộc câu lạc bộ.'
+            );
+        }
 
-    if (!in_array($tt, ['co_mat', 'vang'], true)) {
-        continue;
+        if (!is_string($tt)) {
+            throw new RuntimeException(
+                'Trạng thái điểm danh không hợp lệ.'
+            );
+        }
+
+        /* Để trống nghĩa là chưa điểm danh */
+        if ($tt === '') {
+            continue;
+        }
+
+        if (!in_array($tt, ['co_mat', 'vang'], true)) {
+            throw new RuntimeException(
+                'Giá trị điểm danh không hợp lệ.'
+            );
+        }
+
+        $note = $ghiChu[$id] ?? '';
+
+        if (!is_string($note)) {
+            throw new RuntimeException(
+                'Ghi chú không hợp lệ.'
+            );
+        }
+
+        $note = trim($note);
+
+        if (mb_strlen($note) > 255) {
+            throw new RuntimeException(
+                'Ghi chú không được vượt quá 255 ký tự.'
+            );
+        }
+
+        $stmtLuu->execute([
+            'su_kien_id' => $suKienId,
+            'nguoi_dung_id' => $nguoiDungId,
+            'trang_thai' => $tt,
+            'ghi_chu' => $note
+        ]);
     }
 
+    $pdo->commit();
 
-    /* Kiểm tra user thật sự thuộc CLB */
-    $sqlCheckThanhVien = "
-        SELECT id
-        FROM tham_gia_clb
+    header(
+        'Location: diem-danh.php?clb_id=' .
+        $clbId .
+        '&su_kien_id=' .
+        $suKienId .
+        '&success=1'
+    );
+    exit;
 
-        WHERE nguoi_dung_id = :nguoi_dung_id
-          AND cau_lac_bo_id = :clb_id
-          AND trang_thai = 'hoat_dong'
-    ";
-
-    $stmtCheckThanhVien = $pdo->prepare($sqlCheckThanhVien);
-
-    $stmtCheckThanhVien->execute([
-        'nguoi_dung_id' => $nguoiDungId,
-        'clb_id' => $clbId
-    ]);
-
-    if (!$stmtCheckThanhVien->fetch()) {
-        continue;
+} catch (RuntimeException $e) {
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
     }
 
+    http_response_code(400);
+    exit($e->getMessage());
 
-    $stmtLuu->execute([
-        'su_kien_id' => $suKienId,
-        'nguoi_dung_id' => $nguoiDungId,
-        'trang_thai' => $tt,
-        'ghi_chu' => trim($ghiChu[$nguoiDungId] ?? '')
-    ]);
+} catch (PDOException $e) {
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+
+    error_log($e->getMessage());
+
+    http_response_code(500);
+    exit('Không thể lưu điểm danh. Vui lòng thử lại.');
 }
-
-
-header(
-    'Location: diem-danh.php?clb_id='
-    . $clbId
-    . '&su_kien_id='
-    . $suKienId
-    . '&success=1'
-);
-
-exit;
