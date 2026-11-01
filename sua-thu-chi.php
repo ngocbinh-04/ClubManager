@@ -1,24 +1,28 @@
+
 <?php
+require_once __DIR__ . '/includes/quan-ly-auth.php';
+require_once __DIR__ . '/config/database.php';
+require_once __DIR__ . '/includes/kiem-tra-thu-chi.php';
 
-require_once 'includes/quan-ly-auth.php';
-require_once 'config/database.php';
-
-$userId = $_SESSION['user_id'];
-
-$giaoDichId = (int) ($_GET['id'] ?? 0);
+$userId = (int) $_SESSION['user_id'];
 $clbId = (int) ($_GET['clb_id'] ?? 0);
+$giaoDichId = (int) ($_GET['id'] ?? 0);
 
+taoCsrfThuChi();
 
-/* Kiểm tra CLB thuộc user */
-$sqlClb = "
-    SELECT *
+if ($clbId <= 0 || $giaoDichId <= 0) {
+    http_response_code(400);
+    exit('Thông tin giao dịch không hợp lệ.');
+}
+
+/* Kiểm tra quyền quản lý */
+$stmtClb = $pdo->prepare("
+    SELECT id, ten_clb
     FROM cau_lac_bo
     WHERE id = :clb_id
       AND nguoi_tao_id = :user_id
     LIMIT 1
-";
-
-$stmtClb = $pdo->prepare($sqlClb);
+");
 
 $stmtClb->execute([
     'clb_id' => $clbId,
@@ -28,279 +32,118 @@ $stmtClb->execute([
 $clb = $stmtClb->fetch();
 
 if (!$clb) {
-    header('Location: thu-chi.php');
-    exit;
+    http_response_code(403);
+    exit('Bạn không có quyền quản lý CLB này.');
 }
 
-
-/* Lấy giao dịch */
-$sqlGiaoDich = "
+/* Giao dịch phải thuộc đúng CLB */
+$stmtGD = $pdo->prepare("
     SELECT *
     FROM thu_chi
     WHERE id = :id
       AND cau_lac_bo_id = :clb_id
     LIMIT 1
-";
+");
 
-$stmtGiaoDich = $pdo->prepare($sqlGiaoDich);
-
-$stmtGiaoDich->execute([
+$stmtGD->execute([
     'id' => $giaoDichId,
     'clb_id' => $clbId
 ]);
 
-$giaoDich = $stmtGiaoDich->fetch();
+$giaoDich = $stmtGD->fetch();
 
 if (!$giaoDich) {
-
-    header(
-        'Location: thu-chi.php?clb_id='
-        . $clbId
-    );
-
-    exit;
+    http_response_code(404);
+    exit('Không tìm thấy giao dịch.');
 }
 
+$data = [
+    'loai' => $giaoDich['loai'],
+    'noi_dung' => $giaoDich['noi_dung'],
+    'so_tien' => $giaoDich['so_tien'],
+    'ngay_giao_dich' => $giaoDich['ngay_giao_dich'],
+    'ghi_chu' => $giaoDich['ghi_chu'] ?? ''
+];
 
-$error = '';
+$errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $loai = $_POST['loai'] ?? '';
-    $noiDung = trim($_POST['noi_dung'] ?? '');
-    $soTien = (float) ($_POST['so_tien'] ?? 0);
-    $ngayGiaoDich = $_POST['ngay_giao_dich'] ?? '';
-    $ghiChu = trim($_POST['ghi_chu'] ?? '');
+    if (!csrfThuChiHopLe($_POST['csrf_token'] ?? null)) {
+        $errors[] = 'Phiên biểu mẫu không hợp lệ.';
+    }
 
+    $ketQua = kiemTraGiaoDich($_POST);
+    $data = $ketQua['data'];
+    $errors = array_merge($errors, $ketQua['errors']);
 
-    if (
-        !in_array($loai, ['thu', 'chi'], true) ||
-        $noiDung === '' ||
-        $soTien <= 0 ||
-        $ngayGiaoDich === ''
-    ) {
+    if (!$errors) {
+        try {
+            $stmtUpdate = $pdo->prepare("
+                UPDATE thu_chi
+                SET
+                    loai = :loai,
+                    noi_dung = :noi_dung,
+                    so_tien = :so_tien,
+                    ngay_giao_dich = :ngay_giao_dich,
+                    ghi_chu = :ghi_chu
+                WHERE id = :id
+                  AND cau_lac_bo_id = :clb_id
+            ");
 
-        $error = 'Thông tin giao dịch không hợp lệ.';
+            $stmtUpdate->execute([
+                'loai' => $data['loai'],
+                'noi_dung' => $data['noi_dung'],
+                'so_tien' => $data['so_tien'],
+                'ngay_giao_dich' => $data['ngay_giao_dich'],
+                'ghi_chu' => $data['ghi_chu'],
+                'id' => $giaoDichId,
+                'clb_id' => $clbId
+            ]);
 
-    } else {
+            header(
+                'Location: thu-chi.php?clb_id='
+                . $clbId
+                . '&success=sua'
+            );
+            exit;
 
-        $sqlUpdate = "
-            UPDATE thu_chi
-
-            SET
-                loai = :loai,
-                noi_dung = :noi_dung,
-                so_tien = :so_tien,
-                ngay_giao_dich = :ngay_giao_dich,
-                ghi_chu = :ghi_chu
-
-            WHERE id = :id
-              AND cau_lac_bo_id = :clb_id
-        ";
-
-        $stmtUpdate = $pdo->prepare($sqlUpdate);
-
-        $stmtUpdate->execute([
-            'loai' => $loai,
-            'noi_dung' => $noiDung,
-            'so_tien' => $soTien,
-            'ngay_giao_dich' => $ngayGiaoDich,
-            'ghi_chu' => $ghiChu,
-            'id' => $giaoDichId,
-            'clb_id' => $clbId
-        ]);
-
-
-        header(
-            'Location: thu-chi.php?clb_id='
-            . $clbId
-            . '&success=sua'
-        );
-
-        exit;
+        } catch (PDOException $ex) {
+            error_log($ex->getMessage());
+            $errors[] = 'Không thể cập nhật giao dịch.';
+        }
     }
 }
 
-
 $pageTitle = 'Sửa giao dịch';
 $activePage = 'thu-chi';
+$nutLuu = 'Lưu thay đổi';
 
+require_once __DIR__ . '/includes/header.php';
 ?>
 
-<?php require_once 'includes/header.php'; ?>
-
 <div class="app-layout">
-
-    <?php require_once 'includes/sidebar.php'; ?>
+    <?php require_once __DIR__ . '/includes/sidebar.php'; ?>
 
     <main class="main-content">
-
         <section class="page-header">
-
             <div>
-
                 <h1>Sửa giao dịch</h1>
-
                 <p>
-                    <?= htmlspecialchars($clb['ten_clb']) ?>
+                    Câu lạc bộ:
+                    <strong><?= hienThiHTML($clb['ten_clb']) ?></strong>
                 </p>
-
             </div>
-
         </section>
 
-
-        <?php if ($error !== ''): ?>
-
+        <?php foreach ($errors as $error): ?>
             <div class="alert-error">
-                <?= htmlspecialchars($error) ?>
+                <?= hienThiHTML($error) ?>
             </div>
+        <?php endforeach; ?>
 
-        <?php endif; ?>
-
-
-        <div class="card">
-
-            <form method="POST">
-
-                <div class="form-group">
-
-                    <label for="loai">
-                        Loại giao dịch
-                    </label>
-
-                    <select
-                        name="loai"
-                        id="loai"
-                        required
-                    >
-
-                        <option
-                            value="thu"
-                            <?= (
-                                ($_POST['loai'] ?? $giaoDich['loai']) === 'thu'
-                            ) ? 'selected' : '' ?>
-                        >
-                            Thu
-                        </option>
-
-                        <option
-                            value="chi"
-                            <?= (
-                                ($_POST['loai'] ?? $giaoDich['loai']) === 'chi'
-                            ) ? 'selected' : '' ?>
-                        >
-                            Chi
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="noi_dung">
-                        Nội dung
-                    </label>
-
-                    <input
-                        type="text"
-                        name="noi_dung"
-                        id="noi_dung"
-                        value="<?= htmlspecialchars(
-                            $_POST['noi_dung']
-                            ?? $giaoDich['noi_dung']
-                        ) ?>"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="so_tien">
-                        Số tiền
-                    </label>
-
-                    <input
-                        type="number"
-                        name="so_tien"
-                        id="so_tien"
-                        min="1"
-                        step="1"
-                        value="<?= htmlspecialchars(
-                            $_POST['so_tien']
-                            ?? $giaoDich['so_tien']
-                        ) ?>"
-                        placeholder="Ví dụ: 1000000"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="ngay_giao_dich">
-                        Ngày giao dịch
-                    </label>
-
-                    <input
-                        type="date"
-                        name="ngay_giao_dich"
-                        id="ngay_giao_dich"
-                        value="<?= htmlspecialchars(
-                            $_POST['ngay_giao_dich']
-                            ?? $giaoDich['ngay_giao_dich']
-                        ) ?>"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="ghi_chu">
-                        Ghi chú
-                    </label>
-
-                    <textarea
-                        name="ghi_chu"
-                        id="ghi_chu"
-                        rows="4"
-                    ><?= htmlspecialchars(
-                        $_POST['ghi_chu']
-                        ?? $giaoDich['ghi_chu']
-                        ?? ''
-                    ) ?></textarea>
-
-                </div>
-
-
-                <button
-                    type="submit"
-                    class="btn btn-primary"
-                >
-                    Lưu thay đổi
-                </button>
-
-
-                <a
-                    href="thu-chi.php?clb_id=<?= $clbId ?>"
-                    class="btn"
-                >
-                    Hủy
-                </a>
-
-            </form>
-
-        </div>
-
+        <?php require __DIR__ . '/includes/form-thu-chi.php'; ?>
     </main>
-
 </div>
 
-<?php require_once 'includes/footer.php'; ?>
+<?php require_once __DIR__ . '/includes/footer.php'; ?>
