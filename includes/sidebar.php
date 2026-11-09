@@ -1,3 +1,4 @@
+
 <?php
 
 if (session_status() === PHP_SESSION_NONE) {
@@ -7,15 +8,11 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/../config/database.php';
 
 $activePage = $activePage ?? '';
-$userId = $_SESSION['user_id'] ?? 0;
+$userId = (int) ($_SESSION['user_id'] ?? 0);
 
 $coQuyenQuanLy = false;
 
-
-/* =====================================================
-   KIỂM TRA USER CÓ QUẢN LÝ CLB NÀO KHÔNG
-   ===================================================== */
-
+/* KIỂM TRA QUYỀN QUẢN LÝ CLB */
 if ($userId > 0) {
 
     $sql = "
@@ -39,15 +36,24 @@ if ($userId > 0) {
 
     <div class="sidebar-logo">
 
+        <!-- BẤM LOGO ĐỂ VỀ TRANG CHỦ -->
         <h2>
-            ClubManager
+            <a
+                href="index.php"
+                title="Về trang chủ ClubManager"
+                style="
+                    color: inherit;
+                    text-decoration: none;
+                    cursor: pointer;
+                "
+            >
+                ClubManager
+            </a>
         </h2>
 
     </div>
 
-
     <nav class="sidebar-menu">
-
 
         <a
             href="index.php"
@@ -56,9 +62,7 @@ if ($userId > 0) {
             Trang chủ
         </a>
 
-
         <?php if ($coQuyenQuanLy): ?>
-
 
             <a
                 href="clb-quan-tri.php"
@@ -67,7 +71,6 @@ if ($userId > 0) {
                 Câu lạc bộ quản lý
             </a>
 
-
             <a
                 href="thanh-vien.php"
                 class="<?= $activePage === 'thanh-vien' ? 'active' : '' ?>"
@@ -75,14 +78,12 @@ if ($userId > 0) {
                 Thành viên
             </a>
 
-
             <a
                 href="su-kien.php"
                 class="<?= $activePage === 'su-kien' ? 'active' : '' ?>"
             >
                 Sự kiện
             </a>
-
 
             <a
                 href="diem-danh.php"
@@ -91,14 +92,12 @@ if ($userId > 0) {
                 Điểm danh
             </a>
 
-
             <a
                 href="thu-chi.php"
                 class="<?= $activePage === 'thu-chi' ? 'active' : '' ?>"
             >
                 Thu - Chi
             </a>
-
 
             <a
                 href="thong-ke.php"
@@ -107,14 +106,11 @@ if ($userId > 0) {
                 Thống kê
             </a>
 
-
         <?php else: ?>
-
 
             <a href="index.php#clb-tham-gia">
                 Câu lạc bộ của tôi
             </a>
-
 
             <a
                 href="su-kien.php"
@@ -123,14 +119,11 @@ if ($userId > 0) {
                 Sự kiện
             </a>
 
-
         <?php endif; ?>
-
 
         <a href="dang-xuat.php">
             Đăng xuất
         </a>
-
 
     </nav>
 

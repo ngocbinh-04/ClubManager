@@ -1,3 +1,4 @@
+
 <?php
 
 if (session_status() === PHP_SESSION_NONE) {
@@ -15,7 +16,6 @@ $userEmail = $_SESSION['email'] ?? '';
 <html lang="vi">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta
@@ -24,14 +24,10 @@ $userEmail = $_SESSION['email'] ?? '';
     >
 
     <title>
-        <?= htmlspecialchars($pageTitle) ?>
+        <?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?>
     </title>
 
-    <link
-        rel="stylesheet"
-        href="css/style.css"
-    >
-
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
@@ -40,31 +36,40 @@ $userEmail = $_SESSION['email'] ?? '';
 
     <div class="topbar-left">
 
+        <!-- BẤM LOGO ĐỂ VỀ TRANG CHỦ -->
         <h2>
-            ClubManager
+            <a
+                href="index.php"
+                title="Về trang chủ ClubManager"
+                style="
+                    color: inherit;
+                    text-decoration: none;
+                    cursor: pointer;
+                "
+            >
+                ClubManager
+            </a>
         </h2>
 
     </div>
-
 
     <div class="topbar-right">
 
         <div class="user-info">
 
             <strong>
-                <?= htmlspecialchars($userName) ?>
+                <?= htmlspecialchars($userName, ENT_QUOTES, 'UTF-8') ?>
             </strong>
 
             <?php if ($userEmail !== ''): ?>
 
                 <span>
-                    <?= htmlspecialchars($userEmail) ?>
+                    <?= htmlspecialchars($userEmail, ENT_QUOTES, 'UTF-8') ?>
                 </span>
 
             <?php endif; ?>
 
         </div>
-
 
         <?php if (isset($_SESSION['user_id'])): ?>
 
